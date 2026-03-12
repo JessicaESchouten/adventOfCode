@@ -1,4 +1,4 @@
-package com.adventofcode;
+package com.adventofcode.aoc2025;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -116,8 +116,8 @@ class Dag01Tests {
         Dag01 dag01 = new Dag01();
 
         Path pad = this.pad.resolve("dag01.txt");
-        try (InputStream invoerstroom = Dag01.class.getResourceAsStream("/input2025/dag01.txt")) {
-            Assertions.assertNotNull(invoerstroom, "Resource not found: /input2025/dag01.txt");
+        try (InputStream invoerstroom = Dag01.class.getResourceAsStream("/aoc2025/dag01.txt")) {
+            Assertions.assertNotNull(invoerstroom, "Resource not found: /aoc2025/dag01.txt");
             Files.copy(invoerstroom, pad, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         }
 
