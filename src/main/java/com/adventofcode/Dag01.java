@@ -1,4 +1,4 @@
-package com.adventofcode.aoc2025;
+package com.adventofcode;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +15,7 @@ public class Dag01 {
     public static void main(String[] args) throws IOException {
         Dag01 dag01 = new Dag01();
 
-        Path pad = Path.of("src/main/resources/aoc2025/dag01.txt");
+        Path pad = Path.of("src/main/resources/input2025/dag01.txt");
         dag01.telAantalNullen(pad);
 
         System.out.println("Eindstand pijl: " + dag01.pijl);
