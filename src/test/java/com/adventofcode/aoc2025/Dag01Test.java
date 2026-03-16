@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 class Dag01Test {
 
@@ -60,7 +61,7 @@ class Dag01Test {
             R150
             """);
 
-        dag01.verwerkBestand(input);
+        adventOfCodeApplication.verwerkBestand(input, dag01::verwerkRegel);
 
         Assertions.assertEquals(50, dag01.pijl);
         Assertions.assertEquals(2, dag01.aantalEindstandNullen);
@@ -74,10 +75,10 @@ class Dag01Test {
         Path tmp = pad.resolve("dag01.txt");
         try (InputStream in = Dag01.class.getResourceAsStream("/aoc2025/dag01.txt")) {
             Assertions.assertNotNull(in, "Resource not found: /aoc2025/dag01.txt");
-            Files.copy(in, tmp, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(in, tmp, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        dag01.verwerkBestand(tmp);
+        adventOfCodeApplication.verwerkBestand(tmp, dag01::verwerkRegel);
 
         Assertions.assertEquals(1097, dag01.aantalEindstandNullen);
     }

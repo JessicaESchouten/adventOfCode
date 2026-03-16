@@ -1,22 +1,8 @@
 package com.adventofcode.aoc2025;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class Dag02 {
 
     private long somOngeldigeCodes = 0;
-
-    protected void verwerkBestand(Path pad) throws IOException {
-        try (var regelsUitBestand = Files.lines(pad, StandardCharsets.UTF_8)) {
-            regelsUitBestand
-                    .map(String::trim)
-                    .filter(regel -> !regel.isEmpty())
-                    .forEach(this::verwerkRegel);
-        }
-    }
 
     protected void verwerkRegel(String regel) {
         for (String patroon : regel.trim().split("\\s*,\\s*")) {

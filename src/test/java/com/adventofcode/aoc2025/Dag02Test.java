@@ -99,12 +99,12 @@ class Dag02Test {
 
         Files.writeString(input, """
 
-                123456,012345
+            123456,012345
 
-                  1212
-                """);
+              1212
+            """);
 
-        dag02.verwerkBestand(input);
+        adventOfCodeApplication.verwerkBestand(input, dag02::verwerkRegel);
 
         Assertions.assertEquals(12345 + 1212, dag02.getSomOngeldigeCodes());
     }
