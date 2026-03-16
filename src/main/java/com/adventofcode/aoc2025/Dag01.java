@@ -1,10 +1,5 @@
 package com.adventofcode.aoc2025;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 public class Dag01 {
 
     public static final int START_CIJFER = 50;
@@ -16,14 +11,6 @@ public class Dag01 {
 
     // Alle nullen door clicks (onderweg + eindstap)
     int totaalAantalNullen = 0;
-
-    protected void verwerkBestand(Path pad) throws IOException {
-        try (var regels = Files.lines(pad, StandardCharsets.UTF_8)) {
-            regels.map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .forEach(this::verwerkRegel);
-        }
-    }
 
     void verwerkRegel(String regel) {
         char richting = regel.charAt(0);
