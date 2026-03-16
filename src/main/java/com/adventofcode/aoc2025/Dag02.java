@@ -68,16 +68,29 @@ public class Dag02 {
     }
 
     protected boolean checkGeldigheidHerhalendPatroon(String patroon) {
-        if (patroon.length() % 2 != 0) {
-            // oneven lengte: overslaan
-            return true;
+        int lengte = patroon.length();
+        if (lengte < 2) return true; // te kort om een herhaling (minstens 2x) te zijn
+
+        // False als de hele string bestaat uit een kleiner basispatroon dat >= 2x herhaald wordt.
+        for (int volgendPatroonStartIndex = 1; volgendPatroonStartIndex <= lengte / 2; volgendPatroonStartIndex++) {
+            if (lengte % volgendPatroonStartIndex != 0) continue; // basispatroon moet precies passen
+
+            String basisPatroon = patroon.substring(0, volgendPatroonStartIndex); // eerste stuk ter vergelijking
+
+            boolean volledigHerhaald = true;
+            int startIndex = volgendPatroonStartIndex; // start van het 2e stuk (het 1e start op index 0)
+            while (startIndex < lengte) {
+                if (!patroon.startsWith(basisPatroon, startIndex)) {
+                    volledigHerhaald = false;
+                    break;
+                }
+                startIndex += volgendPatroonStartIndex; // spring naar het begin van het volgende stuk
+            }
+
+            if (volledigHerhaald) return false;
         }
 
-        int midden = patroon.length() / 2;
-        String links = patroon.substring(0, midden);
-        String rechts = patroon.substring(midden);
-
-        return !links.equals(rechts);
+        return true;
     }
 
     protected long getSomOngeldigeCodes() {

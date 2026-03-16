@@ -34,6 +34,20 @@ class Dag02Test {
     }
 
     @Test
+    void checkGeldigheidHerhalendPatroon() {
+        Dag02 dag02 = new Dag02();
+
+        Assertions.assertFalse(dag02.checkGeldigheidHerhalendPatroon("123123"));     // "123" 2x
+        Assertions.assertFalse(dag02.checkGeldigheidHerhalendPatroon("12341234"));   // "1234" 2x
+        Assertions.assertFalse(dag02.checkGeldigheidHerhalendPatroon("123123123"));  // "123" 3x
+        Assertions.assertFalse(dag02.checkGeldigheidHerhalendPatroon("1212121212")); // "12" 5x
+        Assertions.assertFalse(dag02.checkGeldigheidHerhalendPatroon("1111111"));    // "1" 7x
+
+        Assertions.assertTrue(dag02.checkGeldigheidHerhalendPatroon("123456"));      // geen herhaling
+        Assertions.assertTrue(dag02.checkGeldigheidHerhalendPatroon("1234567"));     // geen herhaling
+    }
+
+    @Test
     void verwerkPatroon_range_isInclusief_enTeltOngeldigeCodesOp() {
         Dag02 dag02 = new Dag02();
 
