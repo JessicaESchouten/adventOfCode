@@ -2,37 +2,61 @@ package com.adventofcode.aoc2025;
 
 public class Dag03 {
 
-    private long somTotaalJoltage = 0;
+    private static final int BATTERIJEN_PER_REEKS = 12;
 
-    protected void verwerkRegel(String regel) {
-        String bank = regel.trim();
-        if (bank.isEmpty()) return;
-        somTotaalJoltage += maximaleJoltageVoorBank(bank);
+    private long totaalJoltage = 0;
+
+    void verwerkRegel(String regel) {
+        String reeks = regel.trim();
+        if (reeks.isEmpty()) return;
+        totaalJoltage = Math.addExact(
+            totaalJoltage, berekenMaxJoltage(reeks, BATTERIJEN_PER_REEKS)
+        );
     }
 
-    protected static int maximaleJoltageVoorBank(String bank) {
-        int hoogsteJoltage = -1;
+    static long berekenMaxJoltage(String reeks, int aantal) {
+        valideerReeksEnAantal(reeks, aantal);
+        return berekenMaxJoltageZonderValidatie(reeks, aantal);
+    }
 
-        // Probeer elk cijfer in de bank als "eerste" gekozen batterij (tiental).
-        for (int eersteIndex = 0; eersteIndex < bank.length(); eersteIndex++) {
-            int eersteCijfer = bank.charAt(eersteIndex) - '0';
-
-            int hoogsteCijferRechts = -1;
-            for (int tweedeIndex = eersteIndex + 1; tweedeIndex < bank.length(); tweedeIndex++) {
-                int cijfer = bank.charAt(tweedeIndex) - '0';
-                hoogsteCijferRechts = Math.max(hoogsteCijferRechts, cijfer);
-            }
-
-            if (hoogsteCijferRechts != -1) {
-                int joltage = eersteCijfer * 10 + hoogsteCijferRechts;
-                hoogsteJoltage = Math.max(hoogsteJoltage, joltage);
-            }
+    private static void valideerReeksEnAantal(String reeks, int aantal) {
+        if (aantal < 0) throw new IllegalArgumentException("aantalTeKiezenBatterijen < 0: " + aantal);
+        if (aantal == 0) return;
+        if (reeks.length() < aantal)
+            throw new IllegalArgumentException("Reeks te kort: " + reeks.length() + " < " + aantal);
+        for (int i = 0; i < reeks.length(); i++) {
+           char teken = reeks.charAt(i);
+            if (teken < '0' || teken > '9') throw new IllegalArgumentException("Ongeldige reeks (niet-cijfer): " + reeks);
         }
-
-        return hoogsteJoltage;
     }
 
-    protected long getTotaalJoltage() {
-        return somTotaalJoltage;
+    private static long berekenMaxJoltageZonderValidatie(String reeks, int aantal) {
+        long resultaat = 0L;
+        int startIndex = 0;
+        int lengte = reeks.length();
+
+        for (int positie = 0; positie < aantal; positie++) {
+            int eindExclusief = lengte - (aantal - positie - 1);
+
+            char beste = '0';
+            int besteIndex = startIndex;
+
+            for (int i = startIndex; i < eindExclusief; i++) {
+                char teken = reeks.charAt(i);
+                if (teken > beste) {
+                    beste = teken;
+                    besteIndex = i;
+                    if (beste == '9') break;
+                }
+            }
+
+            resultaat = Math.addExact(Math.multiplyExact(resultaat, 10L), (long) (beste - '0'));
+            startIndex = besteIndex + 1;
+        }
+        return resultaat;
+    }
+
+    long getTotaalJoltage() {
+        return totaalJoltage;
     }
 }
