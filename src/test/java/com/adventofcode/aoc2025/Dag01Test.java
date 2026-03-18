@@ -10,6 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import static com.adventofcode.aoc2025.Dag01.links;
+import static com.adventofcode.aoc2025.Dag01.rechts;
+
 class Dag01Test {
 
     @TempDir
@@ -19,7 +22,7 @@ class Dag01Test {
     void draaiNaarRechts_berekent_pijl() {
         Dag01 dag01 = new Dag01();
 
-        dag01.draaiNaarRechts(50, 21);
+        dag01.draaiNaar(rechts, 50, 21);
 
         Assertions.assertEquals(71, dag01.pijl);
     }
@@ -28,7 +31,7 @@ class Dag01Test {
     void draaiNaarLinks_berekent_pijl() {
         Dag01 dag01 = new Dag01();
 
-        dag01.draaiNaarLinks(50, 21);
+        dag01.draaiNaar(links, 50, 21);
 
         Assertions.assertEquals(29, dag01.pijl);
     }
@@ -37,7 +40,7 @@ class Dag01Test {
     void draaiNaarLinks_L100_vanaf_0_eindigt_op_0_en_telt_eindstand() {
         Dag01 dag01 = new Dag01();
 
-        dag01.draaiNaarLinks(0, 100);
+        dag01.draaiNaar(links, 0, 100);
 
         Assertions.assertEquals(0, dag01.pijl);
         Assertions.assertEquals(1, dag01.aantalEindstandNullen);
