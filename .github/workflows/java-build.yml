@@ -1,0 +1,22 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: [actions/checkout@v4](https://github.com) # Step 1: Checkout the code
+      - name: Set up JDK 17
+        uses: [actions/setup-java@v4](https://github.com/actions/setup-java) # Step 2: Set up a specific JDK version
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven' # Caches dependencies to speed up subsequent runs
+      - name: Build and test with Maven
+        run: ./mvnw clean verify # Step 3: Run the Maven build and test goals
