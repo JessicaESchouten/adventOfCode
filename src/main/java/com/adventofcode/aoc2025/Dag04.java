@@ -47,5 +47,6 @@ public class Dag04 {
             raster[r] = lines[r].toCharArray();
         }
         return raster;
+
     }
 }
