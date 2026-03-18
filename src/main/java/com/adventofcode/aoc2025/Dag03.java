@@ -1,17 +1,14 @@
 package com.adventofcode.aoc2025;
 
-public class Dag03 {
+public class Dag03 extends Dag {
 
     private static final int BATTERIJEN_PER_REEKS = 12;
 
     private long totaalJoltage = 0;
 
-    void verwerkRegel(String regel) {
-        String reeks = regel.trim();
-        if (reeks.isEmpty()) return;
-        totaalJoltage = Math.addExact(
-            totaalJoltage, berekenMaxJoltage(reeks, BATTERIJEN_PER_REEKS)
-        );
+    @Override
+    protected void verwerkPatroon(String patroon) {
+        totaalJoltage = Math.addExact(totaalJoltage, berekenMaxJoltage(patroon, BATTERIJEN_PER_REEKS));
     }
 
     static long berekenMaxJoltage(String reeks, int aantal) {

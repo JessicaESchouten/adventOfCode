@@ -1,6 +1,6 @@
 package com.adventofcode.aoc2025;
 
-public class Dag01 {
+public class Dag01 extends Dag {
 
     public static final int START_CIJFER = 50;
 
@@ -12,14 +12,15 @@ public class Dag01 {
     // Alle nullen door clicks (onderweg + eindstap)
     int totaalAantalNullen = 0;
 
-    void verwerkRegel(String regel) {
-        char richting = regel.charAt(0);
-        int aantal = Integer.parseInt(regel.substring(1).trim());
+    @Override
+    protected void verwerkPatroon(String patroon) {
+        char richting = patroon.charAt(0);
+        int aantal = Integer.parseInt(patroon.substring(1).trim());
 
         switch (richting) {
             case 'L' -> draaiNaarLinks(pijl, aantal);
             case 'R' -> draaiNaarRechts(pijl, aantal);
-            default -> throw new IllegalArgumentException("Onbekende regel: " + regel);
+            default -> throw new IllegalArgumentException("Onbekende regel: " + patroon);
         }
     }
 
