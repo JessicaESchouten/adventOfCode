@@ -1,9 +1,11 @@
 package com.adventofcode.aoc2025;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.lang.Long.parseLong;
@@ -15,17 +17,13 @@ public class Dag02 {
     private long answerPart1 = 0;
     private long answerPart2 = 0;
 
+    @AllArgsConstructor
     public static class Range
     {
         private final long start;
         private final long end;
 
-        public Range(long start, long end){
-            this.start = start;
-            this.end = end;
-        }
-
-        public Stream<Long> stream(){
+        public Stream<Long> stream() {
             return iterate(start, l -> l <= end, begin -> begin + 1);
         }
     }
@@ -52,9 +50,13 @@ public class Dag02 {
         return extended.substring(1, extended.length() - 1).contains(test);
     }
 
-    public void verwerkRegel(String line) {
-        List<Range> ranges = parseInput(line);
-        answerPart1 = ranges.stream().flatMap(Range::stream).filter(Dag02::isRepeatedTwice).mapToLong(Long::longValue).sum();
-        answerPart2 = ranges.stream().flatMap(Range::stream).filter(Dag02::isRepeatedAtLeastTwice).mapToLong(Long::longValue).sum();
+    private long solve(List<Range> ranges, Predicate<Long> invalid) {
+        return ranges.stream().flatMap(Range::stream).filter(invalid).reduce(0L, Long::sum);
+    }
+
+    public void verwerkRegel(String input) {
+        List<Range> ranges = parseInput(input);
+        answerPart1 = solve(ranges, Dag02::isRepeatedTwice);
+        answerPart2 = solve(ranges, Dag02::isRepeatedAtLeastTwice);
     }
 }
