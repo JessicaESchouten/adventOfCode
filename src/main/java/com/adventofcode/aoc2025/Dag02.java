@@ -36,14 +36,14 @@ public class Dag02 {
         return ranges;
     }
 
-    static protected boolean isMirror(Long number) {
+    static protected boolean isRepeatedTwice(Long number) {
         String test = number.toString();
         String links = test.substring(0, test.length() / 2);
         String rechts = test.substring(test.length() / 2);
         return test.length() % 2 == 0 && links.equals(rechts);
     }
 
-    static protected boolean doesRepeat(Long number) {
+    static protected boolean isRepeatedAtLeastTwice(Long number) {
         String test = number.toString();
         String extended = test + test;
         return extended.substring(1, extended.length() - 1).contains(test);
@@ -51,8 +51,8 @@ public class Dag02 {
 
     protected void verwerkRegel(String line) {
         List<Range> ranges = parseInput(line);
-        answerPart1 = ranges.stream().flatMap(Range::stream).filter(Dag02::isMirror).mapToLong(Long::longValue).sum();
-        answerPart2 = ranges.stream().flatMap(Range::stream).filter(Dag02::doesRepeat).mapToLong(Long::longValue).sum();
+        answerPart1 = ranges.stream().flatMap(Range::stream).filter(Dag02::isRepeatedTwice).mapToLong(Long::longValue).sum();
+        answerPart2 = ranges.stream().flatMap(Range::stream).filter(Dag02::isRepeatedAtLeastTwice).mapToLong(Long::longValue).sum();
     }
 
     protected long getAnswerPart1() {
