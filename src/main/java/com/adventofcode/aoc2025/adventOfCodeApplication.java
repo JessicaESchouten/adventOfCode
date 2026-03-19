@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class adventOfCodeApplication {
 
-    public static void main(String[] args) throws IOException {
+    static void main(String[] args) throws IOException {
         Dag01 dag01 = new Dag01();
 
         Path pad1 = Path.of("src/main/resources/aoc2025/dag01.txt");
@@ -23,7 +23,8 @@ public class adventOfCodeApplication {
         Path pad2 = Path.of("src/main/resources/aoc2025/dag02.txt");
         verwerkBestand(pad2, dag02::verwerkRegel);
 
-        System.out.println("Som van de ongeldige codes = " + dag02.getSomOngeldigeCodes());
+        System.out.println("Som van de ongeldige codes 1 = " + dag02.getAnswerPart1());
+        System.out.println("Som van de ongeldige codes 2 = " + dag02.getAnswerPart2());
 
         Dag03 dag03 = new Dag03();
 

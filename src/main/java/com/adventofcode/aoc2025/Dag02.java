@@ -1,85 +1,65 @@
 package com.adventofcode.aoc2025;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static java.lang.Long.parseLong;
+import static java.util.stream.Stream.iterate;
+
 public class Dag02 {
 
-    private long somOngeldigeCodes = 0;
+    public static class Range
+    {
+        private final long start;
+        private final long end;
 
-    protected void verwerkRegel(String regel) {
-        for (String patroon : regel.trim().split("\\s*,\\s*")) {
-            if (patroon.isEmpty()) continue;
-            verwerkPatroon(patroon);
+        public Range(long start, long end){
+            this.start = start;
+            this.end = end;
+        }
+
+        public Stream<Long> stream(){
+            return iterate(start, l -> l <= end, begin -> begin + 1);
         }
     }
 
-    protected void verwerkPatroon(String patroon) {
-        String teCheckenPatroon = patroon.trim();
-        if (teCheckenPatroon.isEmpty()) return;
+    private long answerPart1 = 0;
+    private long answerPart2 = 0;
 
-        // Ondersteun ranges zoals "11-22": verwerk alle codes in de range (inclusief start/eind).
-        if (teCheckenPatroon.contains("-")) {
-            String[] patroonDelen = teCheckenPatroon.split("\\s*-\\s*", 2);
-            if (patroonDelen.length != 2) {
-                throw new IllegalArgumentException("Ongeldige range: " + patroon);
-            }
-
-            long start = Long.parseLong(patroonDelen[0]);
-            long einde = Long.parseLong(patroonDelen[1]);
-            if (start > einde) {
-                throw new IllegalArgumentException("start > einde: " + patroon);
-            }
-
-            for (long code = start; ; code++) {
-                verwerkCodeItem(Long.toString(code), code);
-                if (code == einde) break;
-            }
-            return;
+    protected List<Range> parseInput(String input) {
+        List<Range> ranges = new ArrayList<>();
+        for (String range : input.trim().split("\\s*,\\s*")) {
+            String[] boundary = range.trim().split("\\s*-\\s*");
+            ranges.add(new Range(parseLong(boundary[0]), parseLong(boundary[1])));
         }
-
-        long codeWaarde = Long.parseLong(teCheckenPatroon);
-        verwerkCodeItem(teCheckenPatroon, codeWaarde);
+        return ranges;
     }
 
-    private void verwerkCodeItem(String codeItem, long codeWaarde) {
-        boolean geldig =
-            checkPatroonOpNulAanDeStart(codeItem) &&
-            checkGeldigheidHerhalendPatroon(codeItem);
-
-        if (!geldig) {
-            somOngeldigeCodes = Math.addExact(somOngeldigeCodes, codeWaarde);
-        }
+    static protected boolean isMirror(Long number) {
+        String test = number.toString();
+        String links = test.substring(0, test.length() / 2);
+        String rechts = test.substring(test.length() / 2);
+        return test.length() % 2 == 0 && links.equals(rechts);
     }
 
-    protected boolean checkPatroonOpNulAanDeStart(String patroon) {
-        return !patroon.startsWith("0");
+    static protected boolean doesRepeat(Long number) {
+        String test = number.toString();
+        String extended = test + test;
+        return extended.substring(1, extended.length() - 1).contains(test);
     }
 
-    protected boolean checkGeldigheidHerhalendPatroon(String patroon) {
-        int lengte = patroon.length();
-        if (lengte < 2) return true; // te kort om een herhaling (minstens 2x) te zijn
-
-        // False als de hele string bestaat uit een kleiner basispatroon dat >= 2x herhaald wordt.
-        for (int volgendPatroonStartIndex = 1; volgendPatroonStartIndex <= lengte / 2; volgendPatroonStartIndex++) {
-            if (lengte % volgendPatroonStartIndex != 0) continue; // basispatroon moet precies passen
-
-            String basisPatroon = patroon.substring(0, volgendPatroonStartIndex); // eerste stuk ter vergelijking
-
-            boolean volledigHerhaald = true;
-            int startIndex = volgendPatroonStartIndex; // start van het 2e stuk (het 1e start op index 0)
-            while (startIndex < lengte) {
-                if (!patroon.startsWith(basisPatroon, startIndex)) {
-                    volledigHerhaald = false;
-                    break;
-                }
-                startIndex += volgendPatroonStartIndex; // spring naar het begin van het volgende stuk
-            }
-
-            if (volledigHerhaald) return false;
-        }
-
-        return true;
+    protected void verwerkRegel(String line) {
+        List<Range> ranges = parseInput(line);
+        answerPart1 = ranges.stream().flatMap(Range::stream).filter(Dag02::isMirror).mapToLong(Long::longValue).sum();
+        answerPart2 = ranges.stream().flatMap(Range::stream).filter(Dag02::doesRepeat).mapToLong(Long::longValue).sum();
     }
 
-    protected long getSomOngeldigeCodes() {
-        return somOngeldigeCodes;
+    protected long getAnswerPart1() {
+        return answerPart1;
+    }
+
+    protected long getAnswerPart2() {
+        return answerPart2;
     }
 }
