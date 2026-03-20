@@ -1,16 +1,15 @@
 package com.adventofcode.aoc2025;
 
-public class Dag02 {
+public class Dag02 extends Dag {
 
     private long somOngeldigeCodes = 0;
 
-    protected void verwerkRegel(String regel) {
-        for (String patroon : regel.trim().split("\\s*,\\s*")) {
-            if (patroon.isEmpty()) continue;
-            verwerkPatroon(patroon);
-        }
+    @Override
+    protected String[] splitsRegel(String regel) {
+        return regel.split("\\s*,\\s*");
     }
 
+    @Override
     protected void verwerkPatroon(String patroon) {
         String teCheckenPatroon = patroon.trim();
         if (teCheckenPatroon.isEmpty()) return;
