@@ -1,52 +1,131 @@
 package com.adventofcode.aoc2025;
 
-public class Dag04 {
-    // bereikbaarheid met vorkheftruck minder dan 4 rollen
-    // rij van 8 aaneengesloten
+import java.util.ArrayDeque;
 
-    static int berekenAantalToegankelijkeRollen(String diagram) {
-        char[][] raster = parseDiagram(diagram);
+public class Dag04 extends Dag {
 
-        int count = 0;
-        for (int aantalRollen = 0; aantalRollen < raster.length; aantalRollen++) {
-            for (int aantal = 0; aantal < raster[aantalRollen].length; aantal++) {
-                if (raster[aantalRollen][aantal] != '@') continue;
-                if (telAangrenzendeRollen(raster, aantalRollen, aantal) < 4) count++;
-            }
-        }
-        return count;
+    private static final int TOEGANKELIJKHEID_DREMPEL = 4;
+    private static final int[] RIJ_VERSCHUIVING = {-1, -1, -1, 0, 0, 1, 1, 1};
+    private static final int[] KOLOM_VERSCHUIVING = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+    private final StringBuilder diagram = new StringBuilder();
+
+    @Override
+    protected void verwerkPatroon(String patroon) {
+        if (!diagram.isEmpty()) diagram.append('\n');
+        diagram.append(patroon);
     }
 
-    private static int telAangrenzendeRollen(char[][] raster, int r, int c) {
-        int rows = raster.length;
-        int cols = raster[0].length;
-
-        int count = 0;
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                if (dr == 0 && dc == 0) continue;
-                int rr = r + dr;
-                int cc = c + dc;
-                if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) continue;
-                if (raster[rr][cc] == '@') count++;
-            }
-        }
-        return count;
+    int berekenAntwoordEersteDeel() {
+        return berekenAantalToegankelijkeRollen(diagram.toString());
     }
 
-    private static char[][] parseDiagram(String diagram) {
-        String[] lines = diagram.strip().split("\\R+");
-        int rows = lines.length;
-        int cols = lines[0].length();
+    int berekenAntwoordTweedeDeel() {
+        return berekenTotaalVerwijderbareRollen(diagram.toString());
+    }
 
-        char[][] raster = new char[rows][cols];
-        for (int r = 0; r < rows; r++) {
-            if (lines[r].length() != cols) {
-                throw new IllegalArgumentException("Niet rechthoekig diagram op rij " + r);
+    private static int berekenAantalToegankelijkeRollen(String diagram) {
+        if (diagram == null || diagram.isBlank()) return 0;
+
+        boolean[][] rolAanwezig = parseDiagramNaarRolAanwezigheid(diagram);
+        int aantal = 0;
+
+        for (int rijIndex = 0; rijIndex < rolAanwezig.length; rijIndex++) {
+            for (int kolomIndex = 0; kolomIndex < rolAanwezig[rijIndex].length; kolomIndex++) {
+                if (!rolAanwezig[rijIndex][kolomIndex]) continue;
+                if (telAangrenzendeRollen(rolAanwezig, rijIndex, kolomIndex) < TOEGANKELIJKHEID_DREMPEL) aantal++;
             }
-            raster[r] = lines[r].toCharArray();
         }
-        return raster;
+        return aantal;
+    }
 
+    private static int berekenTotaalVerwijderbareRollen(String diagram) {
+        if (diagram == null || diagram.isBlank()) return 0;
+
+        boolean[][] rolAanwezig = parseDiagramNaarRolAanwezigheid(diagram);
+        int aantalRijen = rolAanwezig.length;
+        int aantalKolommen = rolAanwezig[0].length;
+
+        int[][] aangrenzendeRollen = new int[aantalRijen][aantalKolommen];
+        ArrayDeque<Integer> teVerwijderen = new ArrayDeque<>();
+
+        // Init: bereken buur-aantallen en enqueue alles dat direct toegankelijk is.
+        for (int rijIndex = 0; rijIndex < aantalRijen; rijIndex++) {
+            for (int kolomIndex = 0; kolomIndex < aantalKolommen; kolomIndex++) {
+                if (!rolAanwezig[rijIndex][kolomIndex]) continue;
+                int buren = telAangrenzendeRollen(rolAanwezig, rijIndex, kolomIndex);
+                aangrenzendeRollen[rijIndex][kolomIndex] = buren;
+                if (buren < TOEGANKELIJKHEID_DREMPEL) {
+                    teVerwijderen.addLast(encodePositie(rijIndex, kolomIndex, aantalKolommen));
+                }
+            }
+        }
+
+        int totaalVerwijderd = 0;
+        while (!teVerwijderen.isEmpty()) {
+            int positie = teVerwijderen.removeFirst();
+            int rijIndex = positie / aantalKolommen;
+            int kolomIndex = positie % aantalKolommen;
+
+            if (!rolAanwezig[rijIndex][kolomIndex]) continue;
+            if (aangrenzendeRollen[rijIndex][kolomIndex] >= TOEGANKELIJKHEID_DREMPEL) continue;
+
+            rolAanwezig[rijIndex][kolomIndex] = false;
+            totaalVerwijderd++;
+
+            for (int i = 0; i < 8; i++) {
+                int buurRij = rijIndex + RIJ_VERSCHUIVING[i];
+                int buurKolom = kolomIndex + KOLOM_VERSCHUIVING[i];
+
+                if (buurRij < 0 || buurRij >= aantalRijen) continue;
+                if (buurKolom < 0 || buurKolom >= aantalKolommen) continue;
+                if (!rolAanwezig[buurRij][buurKolom]) continue;
+
+                if (--aangrenzendeRollen[buurRij][buurKolom] == TOEGANKELIJKHEID_DREMPEL - 1) {
+                    teVerwijderen.addLast(encodePositie(buurRij, buurKolom, aantalKolommen));
+                }
+            }
+        }
+
+        return totaalVerwijderd;
+    }
+
+    private static boolean[][] parseDiagramNaarRolAanwezigheid(String diagram) {
+        String[] regels = diagram.strip().split("\\R+");
+        int aantalRijen = regels.length;
+        int aantalKolommen = regels[0].length();
+
+        boolean[][] rolAanwezig = new boolean[aantalRijen][aantalKolommen];
+        for (int rijIndex = 0; rijIndex < aantalRijen; rijIndex++) {
+            if (regels[rijIndex].length() != aantalKolommen) {
+                throw new IllegalArgumentException("Niet rechthoekig diagram op rij " + rijIndex);
+            }
+            for (int kolomIndex = 0; kolomIndex < aantalKolommen; kolomIndex++) {
+                char teken = regels[rijIndex].charAt(kolomIndex);
+                if (teken == '@') rolAanwezig[rijIndex][kolomIndex] = true;
+                else if (teken != '.') throw new IllegalArgumentException("Ongeldig teken in diagram: '" + teken + "'");
+            }
+        }
+        return rolAanwezig;
+    }
+
+    private static int telAangrenzendeRollen(boolean[][] rolAanwezig, int middenRij, int middenKolom) {
+        int aantalRijen = rolAanwezig.length;
+        int aantalKolommen = rolAanwezig[0].length;
+
+        int aangrenzendeRollen = 0;
+        for (int i = 0; i < 8; i++) {
+            int buurRij = middenRij + RIJ_VERSCHUIVING[i];
+            int buurKolom = middenKolom + KOLOM_VERSCHUIVING[i];
+
+            if (buurRij < 0 || buurRij >= aantalRijen) continue;
+            if (buurKolom < 0 || buurKolom >= aantalKolommen) continue;
+            if (rolAanwezig[buurRij][buurKolom]) aangrenzendeRollen++;
+        }
+        return aangrenzendeRollen;
+    }
+
+    private static int encodePositie(int rijIndex, int kolomIndex, int aantalKolommen) {
+        return rijIndex * aantalKolommen + kolomIndex;
     }
 }

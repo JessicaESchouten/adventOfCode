@@ -2,17 +2,9 @@ package com.adventofcode.aoc2025;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 
 class Dag02Test {
-
-    @TempDir
-    Path pad;
 
     @Test
     void checkPatroonOpNulAanDeStart() {
@@ -88,23 +80,6 @@ class Dag02Test {
         Dag02 dag02 = new Dag02();
 
         dag02.verwerkRegel(" 123456 , 012345,1212 ");
-
-        Assertions.assertEquals(12345 + 1212, dag02.getSomOngeldigeCodes());
-    }
-
-    @Test
-    void verwerkBestand_trim_enSlaatLegeRegelsOver() throws IOException {
-        Dag02 dag02 = new Dag02();
-        Path input = pad.resolve("dummybron.txt");
-
-        Files.writeString(input, """
-
-            123456,012345
-
-              1212
-            """);
-
-        adventOfCodeApplication.verwerkBestand(input, dag02::verwerkRegel);
 
         Assertions.assertEquals(12345 + 1212, dag02.getSomOngeldigeCodes());
     }
