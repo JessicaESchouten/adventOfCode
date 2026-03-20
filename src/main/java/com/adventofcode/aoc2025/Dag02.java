@@ -1,85 +1,67 @@
 package com.adventofcode.aoc2025;
 
-public class Dag02 {
+public class Dag02 extends Dag {
 
-    private long somOngeldigeCodes = 0;
+    private long antwoordEersteDeel = 0;
+    private long antwoordTweedeDeel = 0;
 
-    protected void verwerkRegel(String regel) {
-        for (String patroon : regel.trim().split("\\s*,\\s*")) {
-            if (patroon.isEmpty()) continue;
-            verwerkPatroon(patroon);
-        }
+    @Override
+    protected String[] splitsRegel(String regel) {
+        return regel.split(",");
     }
 
+    @Override
     protected void verwerkPatroon(String patroon) {
-        String teCheckenPatroon = patroon.trim();
-        if (teCheckenPatroon.isEmpty()) return;
+        Bereik bereik = Bereik.parse(patroon);
+        DeelAntwoorden sommen = somHerhalingen(bereik);
+        antwoordEersteDeel += sommen.deel1();
+        antwoordTweedeDeel += sommen.deel2();
+    }
 
-        // Ondersteun ranges zoals "11-22": verwerk alle codes in de range (inclusief start/eind).
-        if (teCheckenPatroon.contains("-")) {
-            String[] patroonDelen = teCheckenPatroon.split("\\s*-\\s*", 2);
-            if (patroonDelen.length != 2) {
-                throw new IllegalArgumentException("Ongeldige range: " + patroon);
-            }
+    long berekenAntwoordEersteDeel() {
+        return antwoordEersteDeel;
+    }
 
-            long start = Long.parseLong(patroonDelen[0]);
-            long einde = Long.parseLong(patroonDelen[1]);
-            if (start > einde) {
-                throw new IllegalArgumentException("start > einde: " + patroon);
-            }
+    long berekenAntwoordTweedeDeel() {
+        return antwoordTweedeDeel;
+    }
 
-            for (long code = start; ; code++) {
-                verwerkCodeItem(Long.toString(code), code);
-                if (code == einde) break;
-            }
-            return;
+    private static DeelAntwoorden somHerhalingen(Bereik bereik) {
+        long somDeel1 = 0;
+        long somDeel2 = 0;
+
+        for (long code = bereik.begin(); ; code++) {
+            String patroon = Long.toString(code);
+            if (isHerhalingExactTweeKeer(patroon)) somDeel1 += code;
+            if (isHerhalingMinstensTweeKeer(patroon)) somDeel2 += code;
+            if (code == bereik.einde()) break;
         }
 
-        long codeWaarde = Long.parseLong(teCheckenPatroon);
-        verwerkCodeItem(teCheckenPatroon, codeWaarde);
+        return new DeelAntwoorden(somDeel1, somDeel2);
     }
 
-    private void verwerkCodeItem(String codeItem, long codeWaarde) {
-        boolean geldig =
-            checkPatroonOpNulAanDeStart(codeItem) &&
-            checkGeldigheidHerhalendPatroon(codeItem);
-
-        if (!geldig) {
-            somOngeldigeCodes = Math.addExact(somOngeldigeCodes, codeWaarde);
-        }
-    }
-
-    protected boolean checkPatroonOpNulAanDeStart(String patroon) {
-        return !patroon.startsWith("0");
-    }
-
-    protected boolean checkGeldigheidHerhalendPatroon(String patroon) {
+    private static boolean isHerhalingExactTweeKeer(String patroon) {
         int lengte = patroon.length();
-        if (lengte < 2) return true; // te kort om een herhaling (minstens 2x) te zijn
+        if (lengte % 2 != 0) return false;
 
-        // False als de hele string bestaat uit een kleiner basispatroon dat >= 2x herhaald wordt.
-        for (int volgendPatroonStartIndex = 1; volgendPatroonStartIndex <= lengte / 2; volgendPatroonStartIndex++) {
-            if (lengte % volgendPatroonStartIndex != 0) continue; // basispatroon moet precies passen
-
-            String basisPatroon = patroon.substring(0, volgendPatroonStartIndex); // eerste stuk ter vergelijking
-
-            boolean volledigHerhaald = true;
-            int startIndex = volgendPatroonStartIndex; // start van het 2e stuk (het 1e start op index 0)
-            while (startIndex < lengte) {
-                if (!patroon.startsWith(basisPatroon, startIndex)) {
-                    volledigHerhaald = false;
-                    break;
-                }
-                startIndex += volgendPatroonStartIndex; // spring naar het begin van het volgende stuk
-            }
-
-            if (volledigHerhaald) return false;
-        }
-
-        return true;
+        String links = patroon.substring(0, lengte / 2);
+        String rechts = patroon.substring(lengte / 2);
+        return links.equals(rechts);
     }
 
-    protected long getSomOngeldigeCodes() {
-        return somOngeldigeCodes;
+    private static boolean isHerhalingMinstensTweeKeer(String patroon) {
+        String verdubbeld = patroon + patroon;
+        return verdubbeld.substring(1, verdubbeld.length() - 1).contains(patroon);
+    }
+
+    private record DeelAntwoorden(long deel1, long deel2) {}
+
+    private record Bereik(long begin, long einde) {
+        static Bereik parse(String patroon) {
+            int index = patroon.indexOf('-');
+            long begin = Long.parseLong(patroon.substring(0, index));
+            long einde = Long.parseLong(patroon.substring(index + 1));
+            return new Bereik(begin, einde);
+        }
     }
 }

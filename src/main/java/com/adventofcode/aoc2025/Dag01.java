@@ -2,9 +2,12 @@ package com.adventofcode.aoc2025;
 
 import java.util.function.BinaryOperator;
 
-public class Dag01 {
+public class Dag01 extends Dag {
 
     public static final int START_CIJFER = 50;
+
+    static final BinaryOperator<Integer> rechts = Integer::sum;
+    static final BinaryOperator<Integer> links = (a, b) -> a - b;
 
     int pijl = START_CIJFER;
 
@@ -14,33 +17,33 @@ public class Dag01 {
     // Alle nullen door clicks (onderweg + eindstap)
     int totaalAantalNullen = 0;
 
-    static BinaryOperator<Integer> rechts = (Integer a, Integer b) -> a + b;
-    static BinaryOperator<Integer> links  = (Integer a, Integer b) -> a - b;
-
-    void verwerkRegel(String regel) {
-        char richting = regel.charAt(0);
-        int aantal = Integer.parseInt(regel.substring(1).trim());
+    @Override
+    protected void verwerkPatroon(String patroon) {
+        char richting = patroon.charAt(0);
+        int aantal = Integer.parseInt(patroon.substring(1).trim());
 
         switch (richting) {
             case 'L' -> draaiNaar(links, pijl, aantal);
             case 'R' -> draaiNaar(rechts, pijl, aantal);
-            default -> throw new IllegalArgumentException("Onbekende regel: " + regel);
+            default -> throw new IllegalArgumentException("Onbekende regel: " + patroon);
         }
     }
 
-    protected void draaiNaar(BinaryOperator<Integer> richting, int beginCijfer, int rCijfer) {
-        telNullenTijdensDraaiNaar(richting, beginCijfer, rCijfer);
+    protected void draaiNaar(BinaryOperator<Integer> richting, int beginCijfer, int aantal) {
+        telNullenTijdensDraaiNaar(richting, beginCijfer, aantal);
 
-        pijl = Math.floorMod(richting.apply(beginCijfer, rCijfer), 100);
+        pijl = Math.floorMod(richting.apply(beginCijfer, aantal), 100);
         if (pijl == 0) aantalEindstandNullen++;
     }
 
-    protected void telNullenTijdensDraaiNaar(BinaryOperator<Integer> richting, int beginCijfer, int rCijfer) {
-        if (rCijfer <= 0) return;
+    protected void telNullenTijdensDraaiNaar(BinaryOperator<Integer> richting, int beginCijfer, int aantal) {
+        if (aantal <= 0) return;
 
-        // clicks: begin+1 .. begin+r (inclusief eindstap)
-        int min = richting.apply(beginCijfer, 1);
-        int max = richting.apply(beginCijfer, rCijfer);
+        // clicks: 1 stap t/m N stappen (inclusief eindstap), ongeacht richting
+        int stap1 = richting.apply(beginCijfer, 1);
+        int stapN = richting.apply(beginCijfer, aantal);
+        int min = Math.min(stap1, stapN);
+        int max = Math.max(stap1, stapN);
         totaalAantalNullen += telHonderdtallenBinnenBereik(min, max);
     }
 
