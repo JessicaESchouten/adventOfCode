@@ -12,14 +12,14 @@ public class adventOfCodeApplication {
         Dag01 dag01 = new Dag01();
         Path pad1 = Path.of("src/main/resources/aoc2025/dag01.txt");
         verwerkBestand(pad1, dag01::verwerkRegel);
-        System.out.println("Eindstand pijl: " + dag01.pijl);
         System.out.println("Nullen als eindstand (per draai): " + dag01.aantalEindstandNullen);
         System.out.println("Totaal van alle nullen (onderweg + eindstap): " + dag01.totaalAantalNullen);
 
         Dag02 dag02 = new Dag02();
         Path pad2 = Path.of("src/main/resources/aoc2025/dag02.txt");
         verwerkBestand(pad2, dag02::verwerkRegel);
-        System.out.println("Som van de ongeldige codes = " + dag02.getSomOngeldigeCodes());
+        System.out.println("Som deel 1 = " + dag02.berekenAntwoordEersteDeel());
+        System.out.println("Som deel 2 = " + dag02.berekenAntwoordTweedeDeel());
 
         Dag03 dag03 = new Dag03();
         Path pad3 = Path.of("src/main/resources/aoc2025/dag03.txt");
