@@ -31,7 +31,8 @@ public class adventOfCodeApplication {
         Path pad3 = Path.of("src/main/resources/aoc2025/dag03.txt");
         verwerkBestand(pad3, dag03::verwerkRegel);
 
-        System.out.println("Som van de batterijen = " + dag03.getTotaalJoltage());
+        System.out.println("Som van de batterijen 1 = " + dag03.getMaxJoltage1());
+        System.out.println("Som van de batterijen 2 = " + dag03.getMaxJoltage2());
     }
 
     protected static void verwerkBestand(Path pad, Consumer<String> verwerkRegel) throws IOException {
