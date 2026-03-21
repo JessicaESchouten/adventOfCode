@@ -20,7 +20,7 @@ public class Dag03 {
             int until = bank.length() - remainingBatteries + 1;
             int value = bank.substring(0, until).chars().max().orElseThrow();
             int index = bank.indexOf(value);
-            int digit = value - 48; // char '0' == int 48, char '1' == int 49, ...
+            int digit = value - '0';
             return  maxJoltage(bank.substring(index + 1), remainingBatteries - 1, result * 10 + digit);
         }
     }
