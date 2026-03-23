@@ -1,52 +1,79 @@
 package com.adventofcode.aoc2025;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Getter
 public class Dag04 {
-    // bereikbaarheid met vorkheftruck minder dan 4 rollen
-    // rij van 8 aaneengesloten
 
-    static int berekenAantalToegankelijkeRollen(String diagram) {
-        char[][] raster = parseDiagram(diagram);
+    private int answer1 = 0;
+    private int answer2 = 0;
 
-        int count = 0;
-        for (int aantalRollen = 0; aantalRollen < raster.length; aantalRollen++) {
-            for (int aantal = 0; aantal < raster[aantalRollen].length; aantal++) {
-                if (raster[aantalRollen][aantal] != '@') continue;
-                if (telAangrenzendeRollen(raster, aantalRollen, aantal) < 4) count++;
-            }
+    public record Pos(int x, int y) {
+        public Pos plus(Pos that) {
+            return of(this.x + that.x, this.y + that.y);
         }
-        return count;
+
+        public Set<Pos> adjoint8() {
+            return offset8.stream().map(this::plus).collect(Collectors.toSet());
+        }
+
+        public static Pos of(int x, int y) {
+            return new Pos(x, y);
+        }
+
+        public final static Set<Pos> offset8 = Set.of(
+                of(-1, -1),
+                of(-1, 0),
+                of(-1, 1),
+                of(0, -1),
+                of(0, 1),
+                of(1, -1),
+                of(1, 0),
+                of(1, 1)
+        );
     }
 
-    private static int telAangrenzendeRollen(char[][] raster, int r, int c) {
-        int rows = raster.length;
-        int cols = raster[0].length;
-
-        int count = 0;
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                if (dr == 0 && dc == 0) continue;
-                int rr = r + dr;
-                int cc = c + dc;
-                if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) continue;
-                if (raster[rr][cc] == '@') count++;
+    private static Set<Pos> parseDiagram(List<String> diagram) {
+        Set<Pos> rolls = new HashSet<>();
+        for (int y = 0; y < diagram.size(); y++) {
+            for (int x = 0; x < diagram.get(y).trim().length(); x++) {
+                if (diagram.get(y).trim().charAt(x) == '@') rolls.add(new Pos(x, y));
             }
         }
-        return count;
+        return rolls;
     }
 
-    private static char[][] parseDiagram(String diagram) {
-        String[] lines = diagram.strip().split("\\R+");
-        int rows = lines.length;
-        int cols = lines[0].length();
+    private static Set<Pos> accessible(Set<Pos> rolls) {
+        return rolls.stream().filter(roll -> {
+            Set<Pos> accessible = roll.adjoint8();
+            accessible.retainAll(rolls);
+            return accessible.size() < 4;
+        }).collect(Collectors.toSet());
+    }
 
-        char[][] raster = new char[rows][cols];
-        for (int r = 0; r < rows; r++) {
-            if (lines[r].length() != cols) {
-                throw new IllegalArgumentException("Niet rechthoekig diagram op rij " + r);
-            }
-            raster[r] = lines[r].toCharArray();
+    private static Set<Pos> clearAll(Set<Pos> rolls) {
+        Set<Pos> accessible = accessible(rolls);
+        if (accessible.isEmpty()) {
+            return rolls;
+        } else {
+            Set<Pos> next = new HashSet<>(rolls);
+            next.removeAll(accessible);
+            return clearAll(next);
         }
-        return raster;
+    }
 
+    public void solve(List<String> diagram) {
+        Set<Pos> rolls = parseDiagram(diagram);
+        answer1 = accessible(rolls).size();
+
+        Set<Pos> removed = clearAll(rolls);
+        rolls.removeAll(removed);
+        answer2 = rolls.size();
     }
 }
