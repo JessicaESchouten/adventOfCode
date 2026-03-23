@@ -6,56 +6,56 @@ import org.junit.jupiter.api.Test;
 class Day03Test {
 
     @Test
-    void berekenMaxJoltage_tweeHoogsteAlsGetalInVolgorde_oplopend() {
-        Assertions.assertEquals(46L, Day03.berekenMaxJoltage("124116", 2));
+    void computeMaxJoltage_twoHighestDigits_inIncreasingSequence() {
+        Assertions.assertEquals(46L, Day03.computeMaxJoltage("124116", 2));
     }
 
     @Test
-    void berekenMaxJoltage_exactTweeCijfers() {
-        Assertions.assertEquals(47L, Day03.berekenMaxJoltage("47", 2));
+    void computeMaxJoltage_exactlyTwoDigits() {
+        Assertions.assertEquals(47L, Day03.computeMaxJoltage("47", 2));
     }
 
     @Test
-    void berekenMaxJoltage_behoudVolgorde() {
-        // hoogste cijfers: 9 en 8; 9 komt voor 8, dus resultaat 98
-        Assertions.assertEquals(98L, Day03.berekenMaxJoltage("984", 2));
+    void computeMaxJoltage_preservesOrder() {
+        // Highest digits are 9 and 8; 9 appears before 8, so result is 98.
+        Assertions.assertEquals(98L, Day03.computeMaxJoltage("984", 2));
     }
 
     @Test
-    void berekenMaxJoltage_gelijkeMaxima() {
-        Assertions.assertEquals(99L, Day03.berekenMaxJoltage("9991", 2));
-        Assertions.assertEquals(99L, Day03.berekenMaxJoltage("1999", 2));
+    void computeMaxJoltage_equalMaxima() {
+        Assertions.assertEquals(99L, Day03.computeMaxJoltage("9991", 2));
+        Assertions.assertEquals(99L, Day03.computeMaxJoltage("1999", 2));
     }
 
     @Test
-    void verwerkRegel_reeksVan12Cijfers_wordtAlsGetalOpgeteld() {
-        Day03 dag03 = new Day03();
+    void processLine_12Digits_isAddedAsNumber() {
+        Day03 day03 = new Day03();
 
-        dag03.verwerkRegel("000000000099");
+        day03.processLine("000000000099");
 
-        Assertions.assertEquals(99L, dag03.getTotaalJoltage());
+        Assertions.assertEquals(99L, day03.getTotalJoltage());
     }
 
     @Test
-    void verwerkRegel_berekenMeervoudAanBatterijen() {
-        Day03 dag03 = new Day03();
+    void processLine_multipleLines_accumulates() {
+        Day03 day03 = new Day03();
 
-        // Twee reeksen (regels) verwerken: de totale joltage moet optellen i.p.v. overschrijven.
-        dag03.verwerkRegel("000000000099"); // 99
-        dag03.verwerkRegel("000000000023"); // 23
+        // Two sequences: total joltage must add up rather than overwrite.
+        day03.processLine("000000000099"); // 99
+        day03.processLine("000000000023"); // 23
 
-        Assertions.assertEquals(122L, dag03.getTotaalJoltage());
+        Assertions.assertEquals(122L, day03.getTotalJoltage());
     }
 
     @Test
-    void verwerkRegel_voorbeeld_uit_opgave_totaleJoltage_met12BatterijenPerReeks() {
-        Day03 dag03 = new Day03();
+    void processLine_exampleFromAssignment_totalJoltage_with12BatteriesPerSequence() {
+        Day03 day03 = new Day03();
 
-        dag03.verwerkRegel("987654321111111");
-        dag03.verwerkRegel("811111111111119");
-        dag03.verwerkRegel("234234234234278");
-        dag03.verwerkRegel("818181911112111");
+        day03.processLine("987654321111111");
+        day03.processLine("811111111111119");
+        day03.processLine("234234234234278");
+        day03.processLine("818181911112111");
 
-        Assertions.assertEquals(3121910778619L, dag03.getTotaalJoltage());
+        Assertions.assertEquals(3121910778619L, day03.getTotalJoltage());
     }
 }

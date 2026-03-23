@@ -5,25 +5,26 @@ import org.junit.jupiter.api.Test;
 
 class Day02Test {
 
-    private static final String VOORBEELD = "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862";
+    private static final String EXAMPLE_INPUT =
+            "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862";
 
     @Test
-    void voorbeeld_uit_uitleg_som_van_ongeldige_ids_is_1227775554() {
-        Day02 dag02 = new Day02();
+    void solvePart1_exampleFromDescription_is_1227775554() {
+        Day02 day02 = new Day02();
 
-        dag02.verwerkRegel(VOORBEELD);
+        day02.processLine(EXAMPLE_INPUT);
 
-        Assertions.assertEquals(1227775554L, dag02.berekenAntwoordEersteDeel());
+        Assertions.assertEquals(1227775554L, day02.solvePart1());
     }
 
     @Test
-    void verwerkRegel_tweede_deel_telt_ook_herhaling_met_meer_dan_twee_blokken() {
-        Day02 dag02 = new Day02();
+    void solvePart2_countsRepetitionWithMoreThanTwoBlocks() {
+        Day02 day02 = new Day02();
 
-        // 121212 = "12" 3x => wel deel 2, niet deel 1
-        dag02.verwerkRegel("121212-121212");
+        // 121212 = "12" repeated 3 times -> yes for part 2, no for part 1
+        day02.processLine("121212-121212");
 
-        Assertions.assertEquals(0L, dag02.berekenAntwoordEersteDeel());
-        Assertions.assertEquals(121212L, dag02.berekenAntwoordTweedeDeel());
+        Assertions.assertEquals(0L, day02.solvePart1());
+        Assertions.assertEquals(121212L, day02.solvePart2());
     }
 }

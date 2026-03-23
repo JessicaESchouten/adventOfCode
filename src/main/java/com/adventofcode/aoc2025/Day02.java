@@ -2,66 +2,56 @@ package com.adventofcode.aoc2025;
 
 public class Day02 extends Day {
 
-    private long antwoordEersteDeel = 0;
-    private long antwoordTweedeDeel = 0;
+    private long part1Sum = 0;
+    private long part2Sum = 0;
 
     @Override
-    protected String[] splitsRegel(String regel) {
-        return regel.split(",");
+    protected String[] splitLine(String line) {
+        return line.split(",");
     }
 
     @Override
-    protected void verwerkPatroon(String patroon) {
-        Bereik bereik = Bereik.parse(patroon);
-        DeelAntwoorden sommen = somHerhalingen(bereik);
-        antwoordEersteDeel += sommen.deel1();
-        antwoordTweedeDeel += sommen.deel2();
-    }
+    protected void processToken(String token) {
+        int dash = token.indexOf('-');
+        long startInclusive = Long.parseLong(token.substring(0, dash));
+        long endInclusive = Long.parseLong(token.substring(dash + 1));
 
-    long berekenAntwoordEersteDeel() {
-        return antwoordEersteDeel;
-    }
-
-    long berekenAntwoordTweedeDeel() {
-        return antwoordTweedeDeel;
-    }
-
-    private static DeelAntwoorden somHerhalingen(Bereik bereik) {
-        long somDeel1 = 0;
-        long somDeel2 = 0;
-
-        for (long code = bereik.begin(); ; code++) {
-            String patroon = Long.toString(code);
-            if (isHerhalingExactTweeKeer(patroon)) somDeel1 += code;
-            if (isHerhalingMinstensTweeKeer(patroon)) somDeel2 += code;
-            if (code == bereik.einde()) break;
+        for (long code = startInclusive; code <= endInclusive; code++) {
+            String pattern = Long.toString(code);
+            if (isRepeatedExactlyTwice(pattern)) part1Sum += code;
+            if (isRepeatedAtLeastTwice(pattern)) part2Sum += code;
         }
-
-        return new DeelAntwoorden(somDeel1, somDeel2);
     }
 
-    private static boolean isHerhalingExactTweeKeer(String patroon) {
-        int lengte = patroon.length();
-        if (lengte % 2 != 0) return false;
-
-        String links = patroon.substring(0, lengte / 2);
-        String rechts = patroon.substring(lengte / 2);
-        return links.equals(rechts);
+    long solvePart1() {
+        return part1Sum;
     }
 
-    private static boolean isHerhalingMinstensTweeKeer(String patroon) {
-        String verdubbeld = patroon + patroon;
-        return verdubbeld.substring(1, verdubbeld.length() - 1).contains(patroon);
+    long solvePart2() {
+        return part2Sum;
     }
 
-    private record DeelAntwoorden(long deel1, long deel2) {}
+    private static boolean isRepeatedExactlyTwice(String pattern) {
+        int length = pattern.length();
+        if ((length & 1) == 1) return false;
 
-    private record Bereik(long begin, long einde) {
-        static Bereik parse(String patroon) {
-            int index = patroon.indexOf('-');
-            long begin = Long.parseLong(patroon.substring(0, index));
-            long einde = Long.parseLong(patroon.substring(index + 1));
-            return new Bereik(begin, einde);
+        int half = length / 2;
+        return pattern.regionMatches(0, pattern, half, half);
+    }
+
+    private static boolean isRepeatedAtLeastTwice(String pattern) {
+        int length = pattern.length();
+        for (int blockSize = 1; blockSize <= length / 2; blockSize++) {
+            if (length % blockSize != 0) continue;
+            if (isMadeOfRepeatedBlock(pattern, blockSize)) return true;
         }
+        return false;
+    }
+
+    private static boolean isMadeOfRepeatedBlock(String pattern, int blockSize) {
+        for (int index = blockSize; index < pattern.length(); index++) {
+            if (pattern.charAt(index) != pattern.charAt(index % blockSize)) return false;
+        }
+        return true;
     }
 }

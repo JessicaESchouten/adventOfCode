@@ -4,53 +4,53 @@ import java.util.function.BinaryOperator;
 
 public class Day01 extends Day {
 
-    public static final int START_CIJFER = 50;
+    public static final int START_VALUE = 50;
 
-    static final BinaryOperator<Integer> rechts = Integer::sum;
-    static final BinaryOperator<Integer> links = (a, b) -> a - b;
+    static final BinaryOperator<Integer> RIGHT = Integer::sum;
+    static final BinaryOperator<Integer> LEFT = (a, b) -> a - b;
 
-    int pijl = START_CIJFER;
+    int pointer = START_VALUE;
 
-    // Alleen eindstand per draai
-    int aantalEindstandNullen = 0;
+    // End state per turn
+    int endStateZeroCount = 0;
 
-    // Alle nullen door clicks (onderweg + eindstap)
-    int totaalAantalNullen = 0;
+    // All zeros hit during the turn (intermediate clicks + final click)
+    int totalZeroCount = 0;
 
     @Override
-    protected void verwerkPatroon(String patroon) {
-        char richting = patroon.charAt(0);
-        int aantal = Integer.parseInt(patroon.substring(1).trim());
+    protected void processToken(String token) {
+        char direction = token.charAt(0);
+        int steps = Integer.parseInt(token.substring(1).trim());
 
-        switch (richting) {
-            case 'L' -> draaiNaar(links, pijl, aantal);
-            case 'R' -> draaiNaar(rechts, pijl, aantal);
-            default -> throw new IllegalArgumentException("Onbekende regel: " + patroon);
+        switch (direction) {
+            case 'L' -> turn(LEFT, pointer, steps);
+            case 'R' -> turn(RIGHT, pointer, steps);
+            default -> throw new IllegalArgumentException("Unknown direction: " + token);
         }
     }
 
-    protected void draaiNaar(BinaryOperator<Integer> richting, int beginCijfer, int aantal) {
-        telNullenTijdensDraaiNaar(richting, beginCijfer, aantal);
+    protected void turn(BinaryOperator<Integer> direction, int startValue, int steps) {
+        countZerosDuringTurn(direction, startValue, steps);
 
-        pijl = Math.floorMod(richting.apply(beginCijfer, aantal), 100);
-        if (pijl == 0) aantalEindstandNullen++;
+        pointer = Math.floorMod(direction.apply(startValue, steps), 100);
+        if (pointer == 0) endStateZeroCount++;
     }
 
-    protected void telNullenTijdensDraaiNaar(BinaryOperator<Integer> richting, int beginCijfer, int aantal) {
-        if (aantal <= 0) return;
+    protected void countZerosDuringTurn(BinaryOperator<Integer> direction, int startValue, int steps) {
+        if (steps <= 0) return;
 
-        // clicks: 1 stap t/m N stappen (inclusief eindstap), ongeacht richting
-        int stap1 = richting.apply(beginCijfer, 1);
-        int stapN = richting.apply(beginCijfer, aantal);
-        int min = Math.min(stap1, stapN);
-        int max = Math.max(stap1, stapN);
-        totaalAantalNullen += telHonderdtallenBinnenBereik(min, max);
+        // Clicks: 1 step through N steps (including final step), regardless of direction.
+        int step1 = direction.apply(startValue, 1);
+        int stepN = direction.apply(startValue, steps);
+        int min = Math.min(step1, stepN);
+        int max = Math.max(step1, stepN);
+        totalZeroCount += countMultiplesOfHundredInRange(min, max);
     }
 
-    private static int telHonderdtallenBinnenBereik(int min, int max) {
+    private static int countMultiplesOfHundredInRange(int min, int max) {
         if (min > max) return 0;
 
-        // Aantal veelvouden van 100 in [min..max], werkt ook voor negatieve grenzen.
+        // Number of multiples of 100 in [min..max], works for negative bounds as well.
         return Math.floorDiv(max, 100) - Math.floorDiv(min - 1, 100);
     }
 }

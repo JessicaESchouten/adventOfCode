@@ -9,40 +9,40 @@ import java.util.function.Consumer;
 public class AdventOfCodeApplication {
 
     public static void main(String[] args) throws IOException {
-        Day01 dag01 = new Day01();
-        Path pad1 = Path.of("src/main/resources/aoc2025/day01.txt");
-        verwerkBestand(pad1, dag01::verwerkRegel);
-        System.out.println("Nullen als eindstand (per draai): " + dag01.aantalEindstandNullen);
-        System.out.println("Totaal van alle nullen (onderweg + eindstap): " + dag01.totaalAantalNullen);
+        Day01 day01 = new Day01();
+        Path day01Path = Path.of("src/main/resources/aoc2025/day01.txt");
+        processFile(day01Path, day01::processLine);
+        System.out.println("End state zeros (per turn): " + day01.endStateZeroCount);
+        System.out.println("Total zeros (during + end step): " + day01.totalZeroCount);
 
-        Day02 dag02 = new Day02();
-        Path pad2 = Path.of("src/main/resources/aoc2025/day02.txt");
-        verwerkBestand(pad2, dag02::verwerkRegel);
-        System.out.println("Som deel 1 = " + dag02.berekenAntwoordEersteDeel());
-        System.out.println("Som deel 2 = " + dag02.berekenAntwoordTweedeDeel());
+        Day02 day02 = new Day02();
+        Path day02Path = Path.of("src/main/resources/aoc2025/day02.txt");
+        processFile(day02Path, day02::processLine);
+        System.out.println("Sum part 1 = " + day02.solvePart1());
+        System.out.println("Sum part 2 = " + day02.solvePart2());
 
-        Day03 dag03 = new Day03();
-        Path pad3 = Path.of("src/main/resources/aoc2025/day03.txt");
-        verwerkBestand(pad3, dag03::verwerkRegel);
-        System.out.println("Som van de batterijen = " + dag03.getTotaalJoltage());
+        Day03 day03 = new Day03();
+        Path day03Path = Path.of("src/main/resources/aoc2025/day03.txt");
+        processFile(day03Path, day03::processLine);
+        System.out.println("Battery sum = " + day03.getTotalJoltage());
 
-        Path pad4 = Path.of("src/main/resources/aoc2025/day04.txt");
-        var dag04Regels = Files.readAllLines(pad4, StandardCharsets.UTF_8)
+        Path day04Path = Path.of("src/main/resources/aoc2025/day04.txt");
+        var day04Lines = Files.readAllLines(day04Path, StandardCharsets.UTF_8)
                 .stream()
                 .map(String::trim)
-                .filter(regel -> !regel.isEmpty())
+                .filter(line -> !line.isEmpty())
                 .toList();
 
-        System.out.println("Aantal rollen = " + Day04.solvePart1(dag04Regels));
-        System.out.println("Totaal aantal rollen dat verwijderd kan worden: " + Day04.solvePart2(dag04Regels));
+        System.out.println("Accessible rolls (part 1) = " + Day04.solvePart1(day04Lines));
+        System.out.println("Total removable rolls (part 2) = " + Day04.solvePart2(day04Lines));
     }
 
-    protected static void verwerkBestand(Path pad, Consumer<String> verwerkRegel) throws IOException {
-        try (var regelsUitBestand = Files.lines(pad, StandardCharsets.UTF_8)) {
-            regelsUitBestand
+    static void processFile(Path path, Consumer<String> processLine) throws IOException {
+        try (var lines = Files.lines(path, StandardCharsets.UTF_8)) {
+            lines
                     .map(String::trim)
-                    .filter(regel -> !regel.isEmpty())
-                    .forEach(verwerkRegel);
+                    .filter(line -> !line.isEmpty())
+                    .forEach(processLine);
         }
     }
 }
