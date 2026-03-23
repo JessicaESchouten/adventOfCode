@@ -1,6 +1,6 @@
 package com.adventofcode.aoc2025;
 
-public class Dag02 extends Dag {
+public class Day02 extends Day {
 
     private long antwoordEersteDeel = 0;
     private long antwoordTweedeDeel = 0;
