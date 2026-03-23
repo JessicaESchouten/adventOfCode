@@ -27,22 +27,15 @@ public class Dag04 {
         }
 
         public final static Set<Pos> offset8 = Set.of(
-                of(-1, -1),
-                of(-1, 0),
-                of(-1, 1),
-                of(0, -1),
-                of(0, 1),
-                of(1, -1),
-                of(1, 0),
-                of(1, 1)
+            of(-1, -1), of(-1, 0), of(-1, 1), of(0, -1), of(0, 1), of(1, -1), of(1, 0), of(1, 1)
         );
     }
 
-    private static Set<Pos> parseDiagram(List<String> diagram) {
+    private static Set<Pos> parseLines(List<String> lines) {
         Set<Pos> rolls = new HashSet<>();
-        for (int y = 0; y < diagram.size(); y++) {
-            for (int x = 0; x < diagram.get(y).trim().length(); x++) {
-                if (diagram.get(y).trim().charAt(x) == '@') rolls.add(new Pos(x, y));
+        for (int y = 0; y < lines.size(); y++) {
+            for (int x = 0; x < lines.get(y).trim().length(); x++) {
+                if (lines.get(y).trim().charAt(x) == '@') rolls.add(new Pos(x, y));
             }
         }
         return rolls;
@@ -68,11 +61,11 @@ public class Dag04 {
     }
 
     public void solve(List<String> diagram) {
-        Set<Pos> rolls = parseDiagram(diagram);
+        Set<Pos> rolls = parseLines(diagram);
         answer1 = accessible(rolls).size();
 
-        Set<Pos> removed = clearAll(rolls);
-        rolls.removeAll(removed);
+        Set<Pos> cleared = clearAll(rolls);
+        rolls.removeAll(cleared);
         answer2 = rolls.size();
     }
 }
