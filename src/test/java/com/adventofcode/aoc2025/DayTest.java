@@ -9,62 +9,62 @@ import java.util.List;
 class DayTest {
 
     @Test
-    void verwerkRegel_null_doetNiets() {
-        DummyDag dag = new DummyDag();
+    void processLine_null_doesNothing() {
+        DummyDay day = new DummyDay();
 
-        dag.verwerkRegel(null);
+        day.processLine(null);
 
-        Assertions.assertTrue(dag.patronen.isEmpty());
+        Assertions.assertTrue(day.tokens.isEmpty());
     }
 
     @Test
-    void verwerkRegel_trimt_en_levert_1_token_aan_verwerkPatroon() {
-        DummyDag dag = new DummyDag();
+    void processLine_trims_andPassesOneToken_toProcessToken() {
+        DummyDay day = new DummyDay();
 
-        dag.verwerkRegel("  abc  ");
+        day.processLine("  abc  ");
 
-        Assertions.assertEquals(List.of("abc"), dag.patronen);
+        Assertions.assertEquals(List.of("abc"), day.tokens);
     }
 
     @Test
-    void verwerkRegel_lege_of_whitespace_regel_wordt_genegeerd() {
-        DummyDag dag = new DummyDag();
+    void processLine_emptyOrWhitespace_isIgnored() {
+        DummyDay day = new DummyDay();
 
-        dag.verwerkRegel("");
-        dag.verwerkRegel("   \t  ");
+        day.processLine("");
+        day.processLine("   \t  ");
 
-        Assertions.assertTrue(dag.patronen.isEmpty());
+        Assertions.assertTrue(day.tokens.isEmpty());
     }
 
     @Test
-    void verwerkRegel_gebruikt_splitsRegel_en_slaat_lege_delen_over() {
-        DummyDag dag = new DummyDag() {
+    void processLine_usesSplitLine_andSkipsEmptyParts() {
+        DummyDay day = new DummyDay() {
             @Override
-            protected String[] splitsRegel(String regel) {
+            protected String[] splitLine(String line) {
                 return new String[] { " a ", "   ", "", "\tb\t" };
             }
         };
 
-        dag.verwerkRegel("irrelevant");
+        day.processLine("irrelevant");
 
-        Assertions.assertEquals(List.of("a", "b"), dag.patronen);
+        Assertions.assertEquals(List.of("a", "b"), day.tokens);
     }
 
     @Test
-    void verwerkRegel_default_splitsRegel_splitst_niet() {
-        DummyDag dag = new DummyDag();
+    void processLine_defaultSplitLine_doesNotSplit() {
+        DummyDay day = new DummyDay();
 
-        dag.verwerkRegel("a,b,c");
+        day.processLine("a,b,c");
 
-        Assertions.assertEquals(List.of("a,b,c"), dag.patronen);
+        Assertions.assertEquals(List.of("a,b,c"), day.tokens);
     }
 
-    private static class DummyDag extends Day {
-        final List<String> patronen = new ArrayList<>();
+    private static class DummyDay extends Day {
+        final List<String> tokens = new ArrayList<>();
 
         @Override
-        protected void verwerkPatroon(String patroon) {
-            patronen.add(patroon);
+        protected void processToken(String token) {
+            tokens.add(token);
         }
     }
 }

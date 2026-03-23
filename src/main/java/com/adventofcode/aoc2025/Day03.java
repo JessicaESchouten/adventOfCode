@@ -2,58 +2,57 @@ package com.adventofcode.aoc2025;
 
 public class Day03 extends Day {
 
-    private static final int BATTERIJEN_PER_REEKS = 12;
+    private static final int BATTERIES_PER_SEQUENCE = 12;
 
-    private long totaalJoltage = 0;
+    private long totalJoltage = 0;
 
     @Override
-    protected void verwerkPatroon(String patroon) {
-        totaalJoltage = Math.addExact(totaalJoltage, berekenMaxJoltage(patroon, BATTERIJEN_PER_REEKS));
+    protected void processToken(String token) {
+        totalJoltage = Math.addExact(totalJoltage, computeMaxJoltage(token, BATTERIES_PER_SEQUENCE));
     }
 
-    static long berekenMaxJoltage(String reeks, int aantal) {
-        valideerReeksEnAantal(reeks, aantal);
-        return berekenMaxJoltageZonderValidatie(reeks, aantal);
+    static long computeMaxJoltage(String sequence, int count) {
+        validateSequenceAndCount(sequence, count);
+        return computeMaxJoltageUnchecked(sequence, count);
     }
 
-    private static void valideerReeksEnAantal(String reeks, int aantal) {
-        if (aantal < 0) throw new IllegalArgumentException("aantalTeKiezenBatterijen < 0: " + aantal);
-        if (aantal == 0) return;
-        if (reeks.length() < aantal)
-            throw new IllegalArgumentException("Reeks te kort: " + reeks.length() + " < " + aantal);
-        for (int i = 0; i < reeks.length(); i++) {
-           char teken = reeks.charAt(i);
-            if (teken < '0' || teken > '9') throw new IllegalArgumentException("Ongeldige reeks (niet-cijfer): " + reeks);
+    private static void validateSequenceAndCount(String sequence, int count) {
+        if (count < 0) throw new IllegalArgumentException("count < 0: " + count);
+        if (count == 0) return;
+        if (sequence.length() < count) throw new IllegalArgumentException("Sequence too short: " + sequence.length() + " < " + count);
+        for (int i = 0; i < sequence.length(); i++) {
+            char ch = sequence.charAt(i);
+            if (ch < '0' || ch > '9') throw new IllegalArgumentException("Invalid sequence (non-digit): " + sequence);
         }
     }
 
-    private static long berekenMaxJoltageZonderValidatie(String reeks, int aantal) {
-        long resultaat = 0L;
+    private static long computeMaxJoltageUnchecked(String sequence, int count) {
+        long result = 0L;
         int startIndex = 0;
-        int lengte = reeks.length();
+        int length = sequence.length();
 
-        for (int positie = 0; positie < aantal; positie++) {
-            int eindExclusief = lengte - (aantal - positie - 1);
+        for (int position = 0; position < count; position++) {
+            int endExclusive = length - (count - position - 1);
 
-            char beste = '0';
-            int besteIndex = startIndex;
+            char bestDigit = '0';
+            int bestIndex = startIndex;
 
-            for (int i = startIndex; i < eindExclusief; i++) {
-                char teken = reeks.charAt(i);
-                if (teken > beste) {
-                    beste = teken;
-                    besteIndex = i;
-                    if (beste == '9') break;
+            for (int i = startIndex; i < endExclusive; i++) {
+                char ch = sequence.charAt(i);
+                if (ch > bestDigit) {
+                    bestDigit = ch;
+                    bestIndex = i;
+                    if (bestDigit == '9') break;
                 }
             }
 
-            resultaat = Math.addExact(Math.multiplyExact(resultaat, 10L), (long) (beste - '0'));
-            startIndex = besteIndex + 1;
+            result = Math.addExact(Math.multiplyExact(result, 10L), (long) (bestDigit - '0'));
+            startIndex = bestIndex + 1;
         }
-        return resultaat;
+        return result;
     }
 
-    long getTotaalJoltage() {
-        return totaalJoltage;
+    long getTotalJoltage() {
+        return totalJoltage;
     }
 }

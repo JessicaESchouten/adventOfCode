@@ -10,53 +10,53 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import static com.adventofcode.aoc2025.Day01.links;
-import static com.adventofcode.aoc2025.Day01.rechts;
+import static com.adventofcode.aoc2025.Day01.LEFT;
+import static com.adventofcode.aoc2025.Day01.RIGHT;
 
 class Day01Test {
 
     @TempDir
-    Path pad;
+    Path tempDir;
 
     @Test
-    void draaiNaarRechts_berekent_pijl() {
-        Day01 dag01 = new Day01();
+    void turn_right_updatesPointer() {
+        Day01 day01 = new Day01();
 
-        dag01.draaiNaar(rechts, 50, 21);
+        day01.turn(RIGHT, 50, 21);
 
-        Assertions.assertEquals(71, dag01.pijl);
+        Assertions.assertEquals(71, day01.pointer);
     }
 
     @Test
-    void draaiNaarLinks_berekent_pijl() {
-        Day01 dag01 = new Day01();
+    void turn_left_updatesPointer() {
+        Day01 day01 = new Day01();
 
-        dag01.draaiNaar(links, 50, 21);
+        day01.turn(LEFT, 50, 21);
 
-        Assertions.assertEquals(29, dag01.pijl);
+        Assertions.assertEquals(29, day01.pointer);
     }
 
     @Test
-    void draaiNaarLinks_L100_vanaf_0_eindigt_op_0_en_telt_eindstand() {
-        Day01 dag01 = new Day01();
+    void turn_left_100From0_endsAt0_andCountsEndStateZero() {
+        Day01 day01 = new Day01();
 
-        dag01.draaiNaar(links, 0, 100);
+        day01.turn(LEFT, 0, 100);
 
-        Assertions.assertEquals(0, dag01.pijl);
-        Assertions.assertEquals(1, dag01.aantalEindstandNullen);
+        Assertions.assertEquals(0, day01.pointer);
+        Assertions.assertEquals(1, day01.endStateZeroCount);
     }
 
     @Test
-    void verwerkRegel_onbekendeRichting_geeftException() {
-        Day01 dag01 = new Day01();
+    void processLine_unknownDirection_throws() {
+        Day01 day01 = new Day01();
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> dag01.verwerkRegel("X10"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> day01.processLine("X10"));
     }
 
     @Test
-    void verwerkBestand_verwerkt_regels_en_telt_totaalNullen() throws IOException {
-        Day01 dag01 = new Day01();
-        Path input = pad.resolve("dummybron.txt");
+    void processFile_processesLines_andCountsTotalZeros() throws IOException {
+        Day01 day01 = new Day01();
+        Path input = tempDir.resolve("dummy-source.txt");
 
         Files.writeString(input, """
             R50
@@ -64,25 +64,25 @@ class Day01Test {
             R150
             """);
 
-        AdventOfCodeApplication.verwerkBestand(input, dag01::verwerkRegel);
+        AdventOfCodeApplication.processFile(input, day01::processLine);
 
-        Assertions.assertEquals(50, dag01.pijl);
-        Assertions.assertEquals(2, dag01.aantalEindstandNullen);
-        Assertions.assertEquals(3, dag01.totaalAantalNullen);
+        Assertions.assertEquals(50, day01.pointer);
+        Assertions.assertEquals(2, day01.endStateZeroCount);
+        Assertions.assertEquals(3, day01.totalZeroCount);
     }
 
     @Test
-    void verwerkBestand_hele_bron_telt_eindstandNullen() throws IOException {
-        Day01 dag01 = new Day01();
+    void processFile_fullResource_countsEndStateZeros() throws IOException {
+        Day01 day01 = new Day01();
 
-        Path tmp = pad.resolve("day01.txt");
+        Path tmp = tempDir.resolve("day01.txt");
         try (InputStream in = Day01.class.getResourceAsStream("/aoc2025/day01.txt")) {
             Assertions.assertNotNull(in, "Resource not found: /aoc2025/day01.txt");
             Files.copy(in, tmp, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        AdventOfCodeApplication.verwerkBestand(tmp, dag01::verwerkRegel);
+        AdventOfCodeApplication.processFile(tmp, day01::processLine);
 
-        Assertions.assertEquals(1097, dag01.aantalEindstandNullen);
+        Assertions.assertEquals(1097, day01.endStateZeroCount);
     }
 }
