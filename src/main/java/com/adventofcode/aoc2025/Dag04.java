@@ -1,6 +1,5 @@
 package com.adventofcode.aoc2025;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.HashSet;
