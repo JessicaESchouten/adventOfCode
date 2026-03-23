@@ -2,7 +2,7 @@ package com.adventofcode.aoc2025;
 
 import java.util.function.BinaryOperator;
 
-public class Dag01 extends Dag {
+public class Day01 extends Day {
 
     public static final int START_CIJFER = 50;
 

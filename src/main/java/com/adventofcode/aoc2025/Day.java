@@ -1,6 +1,6 @@
 package com.adventofcode.aoc2025;
 
-abstract class Dag {
+abstract class Day {
 
     public final void verwerkRegel(String regel) {
         if (regel == null) return;

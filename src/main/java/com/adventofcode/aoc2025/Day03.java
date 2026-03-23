@@ -1,6 +1,6 @@
 package com.adventofcode.aoc2025;
 
-public class Dag03 extends Dag {
+public class Day03 extends Day {
 
     private static final int BATTERIJEN_PER_REEKS = 12;
 

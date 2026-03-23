@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-class DagTest {
+class DayTest {
 
     @Test
     void verwerkRegel_null_doetNiets() {
@@ -59,7 +59,7 @@ class DagTest {
         Assertions.assertEquals(List.of("a,b,c"), dag.patronen);
     }
 
-    private static class DummyDag extends Dag {
+    private static class DummyDag extends Day {
         final List<String> patronen = new ArrayList<>();
 
         @Override
