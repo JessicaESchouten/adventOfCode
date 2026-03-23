@@ -26,11 +26,15 @@ public class adventOfCodeApplication {
         verwerkBestand(pad3, dag03::verwerkRegel);
         System.out.println("Som van de batterijen = " + dag03.getTotaalJoltage());
 
-        Dag04 dag04 = new Dag04();
         Path pad4 = Path.of("src/main/resources/aoc2025/dag04.txt");
-        verwerkBestand(pad4, dag04::verwerkRegel);
-        System.out.println("Aantal rollen = " + dag04.berekenAntwoordEersteDeel());
-        System.out.println("Totaal aantal rollen dat verwijderd kan worden: " + dag04.berekenAntwoordTweedeDeel());
+        var dag04Regels = Files.readAllLines(pad4, StandardCharsets.UTF_8)
+                .stream()
+                .map(String::trim)
+                .filter(regel -> !regel.isEmpty())
+                .toList();
+
+        System.out.println("Aantal rollen = " + Day04.solvePart1(dag04Regels));
+        System.out.println("Totaal aantal rollen dat verwijderd kan worden: " + Day04.solvePart2(dag04Regels));
     }
 
     protected static void verwerkBestand(Path pad, Consumer<String> verwerkRegel) throws IOException {
