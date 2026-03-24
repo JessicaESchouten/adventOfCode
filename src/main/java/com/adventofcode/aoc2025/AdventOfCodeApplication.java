@@ -32,9 +32,11 @@ public class AdventOfCodeApplication {
                 .map(String::trim)
                 .filter(line -> !line.isEmpty())
                 .toList();
-
         System.out.println("Accessible rolls (part 1) = " + Day04.solvePart1(day04Lines));
         System.out.println("Total removable rolls (part 2) = " + Day04.solvePart2(day04Lines));
+
+        Path day05Path = Path.of("src/main/resources/aoc2025/day05.txt");
+        System.out.println("Amount of fresh ingredient id's = " + Day05.countFreshIds(day05Path));
     }
 
     static void processFile(Path path, Consumer<String> processLine) throws IOException {
