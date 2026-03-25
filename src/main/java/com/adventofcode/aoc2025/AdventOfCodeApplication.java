@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class AdventOfCodeApplication {
 
-    public static void main(String[] args) throws IOException {
+    static void main(String[] args) throws IOException {
         Day01 day01 = new Day01();
         Path day01Path = Path.of("src/main/resources/aoc2025/day01.txt");
         processFile(day01Path, day01::processLine);
@@ -24,7 +24,8 @@ public class AdventOfCodeApplication {
         Day03 day03 = new Day03();
         Path day03Path = Path.of("src/main/resources/aoc2025/day03.txt");
         processFile(day03Path, day03::processLine);
-        System.out.println("Battery sum = " + day03.getTotalJoltage());
+        System.out.println("Battery sum part 1 = " + day03.solvePart1());
+        System.out.println("Battery sum part 2 = " + day03.solvePart2());
 
         Path day04Path = Path.of("src/main/resources/aoc2025/day04.txt");
         var day04Lines = Files.readAllLines(day04Path, StandardCharsets.UTF_8)
