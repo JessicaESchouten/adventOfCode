@@ -1,9 +1,5 @@
 package com.adventofcode.aoc2025;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,15 +14,11 @@ public final class Day05 {
         }
     }
 
-    public static long countFreshAvailableIds(Path inputPath) throws IOException {
-        return countFreshAvailableIds(Files.readString(inputPath, StandardCharsets.UTF_8));
-    }
-
     static long countFreshAvailableIds(String input) {
         String text = input.trim();
-        BlankLineSeparator separator = findBlankLineSeparator(text);
-        String rangeSection = text.substring(0, separator.index);
-        String idsSection = text.substring(separator.index + separator.length);
+        String[] sections = Inputs.splitOnBlankLine(text);
+        String rangeSection = sections[0];
+        String idsSection = sections[1];
 
         List<InclusiveRange> ranges = parseInclusiveRanges(rangeSection);
         long count = 0L;
@@ -42,14 +34,9 @@ public final class Day05 {
         return count;
     }
 
-    public static long countDistinctFreshIdsInRanges(Path inputPath) throws IOException {
-        return countDistinctFreshIdsInRanges(Files.readString(inputPath, StandardCharsets.UTF_8));
-    }
-
     static long countDistinctFreshIdsInRanges(String input) {
         String text = input.trim();
-        BlankLineSeparator separator = findBlankLineSeparator(text);
-        String rangeSection = text.substring(0, separator.index);
+        String rangeSection = Inputs.splitOnBlankLine(text)[0];
         List<InclusiveRange> ranges = parseInclusiveRanges(rangeSection);
 
         ranges.sort(
@@ -57,8 +44,8 @@ public final class Day05 {
                         .thenComparingLong(InclusiveRange::endInclusive));
 
         long distinctFreshIdCount = 0L;
-        long mergedStart = ranges.get(0).startInclusive();
-        long mergedEnd = ranges.get(0).endInclusive();
+        long mergedStart = ranges.getFirst().startInclusive();
+        long mergedEnd = ranges.getFirst().endInclusive();
 
         for (int i = 1; i < ranges.size(); i++) {
             InclusiveRange r = ranges.get(i);
@@ -75,18 +62,6 @@ public final class Day05 {
         }
         distinctFreshIdCount += mergedEnd - mergedStart + 1;
         return distinctFreshIdCount;
-    }
-
-    private record BlankLineSeparator(int index, int length) {}
-
-    private static BlankLineSeparator findBlankLineSeparator(String text) {
-        int index = text.indexOf("\r\n\r\n");
-        int length = 4;
-        if (index < 0) {
-            index = text.indexOf("\n\n");
-            length = 2;
-        }
-        return new BlankLineSeparator(index, length);
     }
 
     private static List<InclusiveRange> parseInclusiveRanges(String text) {

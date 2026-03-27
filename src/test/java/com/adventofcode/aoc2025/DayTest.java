@@ -9,7 +9,7 @@ import java.util.List;
 class DayTest {
 
     @Test
-    void processLine_null_doesNothing() {
+    void framework_processLine_null_doesNothing() {
         DummyDay day = new DummyDay();
 
         day.processLine(null);
@@ -18,7 +18,7 @@ class DayTest {
     }
 
     @Test
-    void processLine_trims_andPassesOneToken_toProcessToken() {
+    void framework_processLine_trims_andPassesOneToken_toProcessToken() {
         DummyDay day = new DummyDay();
 
         day.processLine("  abc  ");
@@ -27,7 +27,7 @@ class DayTest {
     }
 
     @Test
-    void processLine_emptyOrWhitespace_isIgnored() {
+    void framework_processLine_emptyOrWhitespace_isIgnored() {
         DummyDay day = new DummyDay();
 
         day.processLine("");
@@ -37,7 +37,7 @@ class DayTest {
     }
 
     @Test
-    void processLine_usesSplitLine_andSkipsEmptyParts() {
+    void framework_processLine_usesSplitLine_andSkipsEmptyParts() {
         DummyDay day = new DummyDay() {
             @Override
             protected String[] splitLine(String line) {
@@ -51,7 +51,7 @@ class DayTest {
     }
 
     @Test
-    void processLine_defaultSplitLine_doesNotSplit() {
+    void framework_processLine_defaultSplitLine_doesNotSplit() {
         DummyDay day = new DummyDay();
 
         day.processLine("a,b,c");
@@ -68,3 +68,4 @@ class DayTest {
         }
     }
 }
+

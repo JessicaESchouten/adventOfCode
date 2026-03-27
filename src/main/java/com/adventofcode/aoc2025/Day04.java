@@ -11,22 +11,22 @@ public class Day04 {
     private static final int[] NEIGHBOR_ROW_OFFSET = { -1, -1, -1, 0, 0, 1, 1, 1 };
     private static final int[] NEIGHBOR_COL_OFFSET = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-    record Pos(int x, int y) { }
+    record Pos(int x, int y) {}
 
-    public static long solvePart1(List<String> lines) {
-        Set<Pos> rolls = parseLines(lines);
+    public static long solvePart1(List<String> gridLines) {
+        Set<Pos> rolls = parseLines(gridLines);
         return accessible(rolls).size();
     }
 
-    public static long solvePart2(List<String> lines) {
-        Set<Pos> rolls = parseLines(lines);
+    public static long solvePart2(List<String> gridLines) {
+        Set<Pos> rolls = parseLines(gridLines);
         return removeAllAccessible(rolls);
     }
 
-    private static Set<Pos> parseLines(List<String> lines) {
+    private static Set<Pos> parseLines(List<String> gridLines) {
         Set<Pos> rolls = new HashSet<>();
-        for (int y = 0; y < lines.size(); y++) {
-            String line = lines.get(y).trim();
+        for (int y = 0; y < gridLines.size(); y++) {
+            String line = gridLines.get(y).trim();
             for (int x = 0; x < line.length(); x++) {
                 if (line.charAt(x) == ROLL) rolls.add(new Pos(x, y));
             }
