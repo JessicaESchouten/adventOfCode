@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 class Day05Test {
 
     @Test
-    void countFreshAvailableIds_exampleFromPuzzle() {
+    void puzzleExample_part1_and_part2_lf() {
         String input = """
                 3-5
                 10-14
@@ -22,29 +22,11 @@ class Day05Test {
                 """;
 
         Assertions.assertEquals(3L, Day05.countFreshAvailableIds(input));
-    }
-
-    @Test
-    void countDistinctFreshIdsInRanges_exampleFromPuzzle() {
-        String input = """
-                3-5
-                10-14
-                16-20
-                12-18
-
-                1
-                5
-                8
-                11
-                17
-                32
-                """;
-
         Assertions.assertEquals(14L, Day05.countDistinctFreshIdsInRanges(input));
     }
 
     @Test
-    void handlesCrLfBlankLineSeparator_exampleFromPuzzle() {
+    void puzzleExample_part1_and_part2_crlf() {
         String input = """
                 3-5
                 10-14
