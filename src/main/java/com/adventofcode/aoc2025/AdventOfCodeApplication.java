@@ -37,7 +37,12 @@ public class AdventOfCodeApplication {
         System.out.println("Total removable rolls (part 2) = " + Day04.solvePart2(day04Lines));
 
         Path day05Path = Path.of("src/main/resources/aoc2025/day05.txt");
-        System.out.println("Amount of fresh ingredient id's = " + Day05.countFreshIds(day05Path));
+        System.out.println(
+                "Fresh ingredient IDs in available list (part 1) = "
+                        + Day05.countFreshAvailableIds(day05Path));
+        System.out.println(
+                "Distinct fresh ingredient IDs in ranges (part 2) = "
+                        + Day05.countDistinctFreshIdsInRanges(day05Path));
     }
 
     static void processFile(Path path, Consumer<String> processLine) throws IOException {

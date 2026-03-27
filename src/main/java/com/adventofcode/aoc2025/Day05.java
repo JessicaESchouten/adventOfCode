@@ -5,42 +5,34 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public final class Day05 {
 
     private Day05() {}
 
-    record Range(long startInclusive, long endInclusive) {
+    record InclusiveRange(long startInclusive, long endInclusive) {
         boolean contains(long value) {
             return value >= startInclusive && value <= endInclusive;
         }
     }
 
-    public static long countFreshIds(Path inputPath) throws IOException {
-        return countFreshIds(Files.readString(inputPath, StandardCharsets.UTF_8));
+    public static long countFreshAvailableIds(Path inputPath) throws IOException {
+        return countFreshAvailableIds(Files.readString(inputPath, StandardCharsets.UTF_8));
     }
 
-    static long countFreshIds(String input) {
+    static long countFreshAvailableIds(String input) {
         String text = input.trim();
+        BlankLineSeparator separator = findBlankLineSeparator(text);
+        String rangeSection = text.substring(0, separator.index);
+        String idsSection = text.substring(separator.index + separator.length);
 
-        int seperatorIndex = -1;
-        int seperator = text.indexOf("\r\n\r\n");
-        if (seperator >= 0) {
-            seperatorIndex = 4;
-        } else {
-            seperator = text.indexOf("\n\n");
-            if (seperator >= 0) seperatorIndex = 2;
-        }
-
-        String rangesText = text.substring(0, seperator);
-        String idsText = text.substring(seperator + seperatorIndex);
-
-        List<Range> ranges = parseRanges(rangesText);
+        List<InclusiveRange> ranges = parseInclusiveRanges(rangeSection);
         long count = 0L;
-        for (String line : idsText.trim().split("\\R")) {
+        for (String line : idsSection.trim().split("\\R")) {
             long id = Long.parseLong(line.trim());
-            for (Range r : ranges) {
+            for (InclusiveRange r : ranges) {
                 if (r.contains(id)) {
                     count++;
                     break;
@@ -50,9 +42,56 @@ public final class Day05 {
         return count;
     }
 
-    private static List<Range> parseRanges(String text) {
+    public static long countDistinctFreshIdsInRanges(Path inputPath) throws IOException {
+        return countDistinctFreshIdsInRanges(Files.readString(inputPath, StandardCharsets.UTF_8));
+    }
+
+    static long countDistinctFreshIdsInRanges(String input) {
+        String text = input.trim();
+        BlankLineSeparator separator = findBlankLineSeparator(text);
+        String rangeSection = text.substring(0, separator.index);
+        List<InclusiveRange> ranges = parseInclusiveRanges(rangeSection);
+
+        ranges.sort(
+                Comparator.comparingLong(InclusiveRange::startInclusive)
+                        .thenComparingLong(InclusiveRange::endInclusive));
+
+        long distinctFreshIdCount = 0L;
+        long mergedStart = ranges.get(0).startInclusive();
+        long mergedEnd = ranges.get(0).endInclusive();
+
+        for (int i = 1; i < ranges.size(); i++) {
+            InclusiveRange r = ranges.get(i);
+            long start = r.startInclusive();
+            long end = r.endInclusive();
+
+            if (start <= mergedEnd + 1) {
+                if (end > mergedEnd) mergedEnd = end;
+            } else {
+                distinctFreshIdCount += mergedEnd - mergedStart + 1;
+                mergedStart = start;
+                mergedEnd = end;
+            }
+        }
+        distinctFreshIdCount += mergedEnd - mergedStart + 1;
+        return distinctFreshIdCount;
+    }
+
+    private record BlankLineSeparator(int index, int length) {}
+
+    private static BlankLineSeparator findBlankLineSeparator(String text) {
+        int index = text.indexOf("\r\n\r\n");
+        int length = 4;
+        if (index < 0) {
+            index = text.indexOf("\n\n");
+            length = 2;
+        }
+        return new BlankLineSeparator(index, length);
+    }
+
+    private static List<InclusiveRange> parseInclusiveRanges(String text) {
         String[] lines = text.trim().split("\\R");
-        List<Range> ranges = new ArrayList<>(lines.length);
+        List<InclusiveRange> ranges = new ArrayList<>(lines.length);
 
         for (String line : lines) {
             String token = line.trim();
@@ -62,7 +101,7 @@ public final class Day05 {
 
             long startInclusive = Long.parseLong(token.substring(0, dash).trim());
             long endInclusive = Long.parseLong(token.substring(dash + 1).trim());
-            ranges.add(new Range(startInclusive, endInclusive));
+            ranges.add(new InclusiveRange(startInclusive, endInclusive));
         }
         return ranges;
     }
