@@ -21,11 +21,10 @@ class Day01Test {
     @Test
     void puzzleExample_part1_and_part2() {
         Day01 day01 = new Day01();
+        Day.Answers answers = day01.solve(PUZZLE_EXAMPLE_INPUT);
 
-        PUZZLE_EXAMPLE_INPUT.strip().lines().forEach(day01::processLine);
-
-        Assertions.assertEquals(3, day01.endStateZeroCount);
-        Assertions.assertEquals(6, day01.totalZeroCount);
+        Assertions.assertEquals(3, answers.part1());
+        Assertions.assertEquals(6, answers.part2());
     }
 }
 

@@ -5,13 +5,21 @@ public class Day03 extends Day {
     private static final int PART1_BATTERIES_PER_SEQUENCE = 2;
     private static final int PART2_BATTERIES_PER_SEQUENCE = 12;
 
-    private long part1TotalJoltage = 0;
-    private long part2TotalJoltage = 0;
+    public Day03() {
+        super("day03");
+    }
 
     @Override
-    protected void processToken(String token) {
-        part1TotalJoltage = Math.addExact(part1TotalJoltage, maxJoltage(token, PART1_BATTERIES_PER_SEQUENCE));
-        part2TotalJoltage = Math.addExact(part2TotalJoltage, maxJoltage(token, PART2_BATTERIES_PER_SEQUENCE));
+    protected Answers solve(String input) {
+        long part1TotalJoltage = 0;
+        long part2TotalJoltage = 0;
+
+        for (String token : input.split("\\R")) {
+            part1TotalJoltage = Math.addExact(part1TotalJoltage, maxJoltage(token, PART1_BATTERIES_PER_SEQUENCE));
+            part2TotalJoltage = Math.addExact(part2TotalJoltage, maxJoltage(token, PART2_BATTERIES_PER_SEQUENCE));
+        }
+
+        return new Answers(part1TotalJoltage, part2TotalJoltage);
     }
 
     static long maxJoltage(String bank, int remainingBatteries) {
@@ -31,11 +39,5 @@ public class Day03 extends Day {
         return maxJoltage(bank.substring(index + 1), remainingBatteries - 1, result * 10 + digit);
     }
 
-    long solvePart1() {
-        return part1TotalJoltage;
-    }
 
-    long solvePart2() {
-        return part2TotalJoltage;
-    }
 }

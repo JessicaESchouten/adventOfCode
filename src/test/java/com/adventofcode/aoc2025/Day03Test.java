@@ -9,12 +9,15 @@ class Day03Test {
     void puzzleExample_part1_and_part2() {
         Day03 day03 = new Day03();
 
-        day03.processLine("987654321111111");
-        day03.processLine("811111111111119");
-        day03.processLine("234234234234278");
-        day03.processLine("818181911112111");
+        String input = """
+987654321111111
+811111111111119
+234234234234278
+818181911112111
+""";
 
-        Assertions.assertEquals(357L, day03.solvePart1());
-        Assertions.assertEquals(3121910778619L, day03.solvePart2());
+        Day.Answers answers = day03.solve(input);
+        Assertions.assertEquals(357L, answers.part1());
+        Assertions.assertEquals(3121910778619L, answers.part2());
     }
 }

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public final class Day05 {
-
-    private Day05() {}
+public final class Day05 extends Day {
 
     record InclusiveRange(long startInclusive, long endInclusive) {
         boolean contains(long value) {
@@ -14,16 +12,24 @@ public final class Day05 {
         }
     }
 
+    public Day05() {
+        super("day05");
+    }
+
+    @Override
+    protected Answers solve(String input) {
+        return new Answers(countFreshAvailableIds(input), countDistinctFreshIdsInRanges(input));
+    }
+
     static long countFreshAvailableIds(String input) {
-        String text = input.trim();
-        String[] sections = Inputs.splitOnBlankLine(text);
+        String[] sections = Inputs.splitOnBlankLine(input);
         String rangeSection = sections[0];
         String idsSection = sections[1];
 
         List<InclusiveRange> ranges = parseInclusiveRanges(rangeSection);
         long count = 0L;
-        for (String line : idsSection.trim().split("\\R")) {
-            long id = Long.parseLong(line.trim());
+        for (String line : idsSection.split("\\R")) {
+            long id = Long.parseLong(line);
             for (InclusiveRange r : ranges) {
                 if (r.contains(id)) {
                     count++;
@@ -35,8 +41,7 @@ public final class Day05 {
     }
 
     static long countDistinctFreshIdsInRanges(String input) {
-        String text = input.trim();
-        String rangeSection = Inputs.splitOnBlankLine(text)[0];
+        String rangeSection = Inputs.splitOnBlankLine(input)[0];
         List<InclusiveRange> ranges = parseInclusiveRanges(rangeSection);
 
         ranges.sort(
@@ -65,17 +70,14 @@ public final class Day05 {
     }
 
     private static List<InclusiveRange> parseInclusiveRanges(String text) {
-        String[] lines = text.trim().split("\\R");
+        String[] lines = text.split("\\R");
         List<InclusiveRange> ranges = new ArrayList<>(lines.length);
 
         for (String line : lines) {
-            String token = line.trim();
-            if (token.isEmpty()) continue;
+            int dash = line.indexOf('-');
 
-            int dash = token.indexOf('-');
-
-            long startInclusive = Long.parseLong(token.substring(0, dash).trim());
-            long endInclusive = Long.parseLong(token.substring(dash + 1).trim());
+            long startInclusive = Long.parseLong(line.substring(0, dash));
+            long endInclusive = Long.parseLong(line.substring(dash + 1));
             ranges.add(new InclusiveRange(startInclusive, endInclusive));
         }
         return ranges;
