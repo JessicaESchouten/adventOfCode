@@ -21,8 +21,10 @@ class Day05Test {
                 32
                 """;
 
-        Assertions.assertEquals(3L, Day05.countFreshAvailableIds(input));
-        Assertions.assertEquals(14L, Day05.countDistinctFreshIdsInRanges(input));
+        Day05 day05 = new Day05();
+        Day.Answers answers = day05.solve(input);
+        Assertions.assertEquals(3L, answers.part1());
+        Assertions.assertEquals(14L, answers.part2());
     }
 
     @Test
@@ -41,7 +43,9 @@ class Day05Test {
                 32
                 """.replace("\n", "\r\n");
 
-        Assertions.assertEquals(3L, Day05.countFreshAvailableIds(input));
-        Assertions.assertEquals(14L, Day05.countDistinctFreshIdsInRanges(input));
+        Day05 day05 = new Day05();
+        Day.Answers answers = day05.solve(input);
+        Assertions.assertEquals(3L, answers.part1());
+        Assertions.assertEquals(14L, answers.part2());
     }
 }

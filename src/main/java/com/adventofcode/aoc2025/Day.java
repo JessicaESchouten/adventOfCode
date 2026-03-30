@@ -1,20 +1,28 @@
 package com.adventofcode.aoc2025;
 
-abstract class Day {
+import java.io.IOException;
+import java.nio.file.Path;
 
-    public final void processLine(String line) {
-        if (line == null) return;
+public abstract class Day {
 
-        for (String part : splitLine(line)) {
-            String token = part.trim();
-            if (token.isEmpty()) continue;
-            processToken(token);
-        }
+    public record Answers(Object part1, Object part2) {}
+
+    private final String inputName;
+
+    protected Day(String inputName) {
+        this.inputName = inputName;
     }
 
-    protected String[] splitLine(String line) {
-        return new String[] { line };
+    protected abstract Answers solve(String input);
+
+    protected Path defaultInputPath() {
+        return Path.of("src/main/resources/aoc2025/%s.txt".formatted(inputName));
     }
 
-    protected abstract void processToken(String token);
+    public final void run() throws IOException {
+        String input = Inputs.readUtf8(defaultInputPath());
+        Answers answers = solve(input);
+        System.out.println(answers.part1());
+        System.out.println(answers.part2());
+    }
 }

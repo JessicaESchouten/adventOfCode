@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Day04 {
+public class Day04 extends Day {
 
     private static final char ROLL = '@';
     private static final int ACCESS_THRESHOLD = 4;
@@ -12,6 +12,16 @@ public class Day04 {
     private static final int[] NEIGHBOR_COL_OFFSET = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
     record Pos(int x, int y) {}
+
+    public Day04() {
+        super("day04");
+    }
+
+    @Override
+    protected Answers solve(String input) {
+        List<String> lines = List.of(input.split("\\R"));
+        return new Answers(solvePart1(lines), solvePart2(lines));
+    }
 
     public static long solvePart1(List<String> gridLines) {
         Set<Pos> rolls = parseLines(gridLines);
@@ -26,7 +36,7 @@ public class Day04 {
     private static Set<Pos> parseLines(List<String> gridLines) {
         Set<Pos> rolls = new HashSet<>();
         for (int y = 0; y < gridLines.size(); y++) {
-            String line = gridLines.get(y).trim();
+            String line = gridLines.get(y);
             for (int x = 0; x < line.length(); x++) {
                 if (line.charAt(x) == ROLL) rolls.add(new Pos(x, y));
             }

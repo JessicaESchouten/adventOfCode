@@ -2,33 +2,28 @@ package com.adventofcode.aoc2025;
 
 public class Day02 extends Day {
 
-    private long part1Sum = 0;
-    private long part2Sum = 0;
-
-    @Override
-    protected String[] splitLine(String line) {
-        return line.split(",");
+    public Day02() {
+        super("day02");
     }
 
     @Override
-    protected void processToken(String token) {
-        int dash = token.indexOf('-');
-        long startInclusive = Long.parseLong(token.substring(0, dash));
-        long endInclusive = Long.parseLong(token.substring(dash + 1));
+    protected Answers solve(String input) {
+        long part1Sum = 0;
+        long part2Sum = 0;
 
-        for (long code = startInclusive; code <= endInclusive; code++) {
-            String pattern = Long.toString(code);
-            if (isRepeatedExactlyTwice(pattern)) part1Sum += code;
-            if (isRepeatedAtLeastTwice(pattern)) part2Sum += code;
+        for (String token : input.split(",|\\R")) {
+            int dash = token.indexOf('-');
+            long startInclusive = Long.parseLong(token.substring(0, dash));
+            long endInclusive = Long.parseLong(token.substring(dash + 1));
+
+            for (long code = startInclusive; code <= endInclusive; code++) {
+                String pattern = Long.toString(code);
+                if (isRepeatedExactlyTwice(pattern)) part1Sum += code;
+                if (isRepeatedAtLeastTwice(pattern)) part2Sum += code;
+            }
         }
-    }
 
-    long solvePart1() {
-        return part1Sum;
-    }
-
-    long solvePart2() {
-        return part2Sum;
+        return new Answers(part1Sum, part2Sum);
     }
 
     private static boolean isRepeatedExactlyTwice(String pattern) {

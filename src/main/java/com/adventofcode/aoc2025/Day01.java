@@ -9,42 +9,39 @@ public class Day01 extends Day {
     static final BinaryOperator<Integer> RIGHT = Integer::sum;
     static final BinaryOperator<Integer> LEFT = (a, b) -> a - b;
 
-    int pointer = START_VALUE;
-
-    // End state per turn
-    int endStateZeroCount = 0;
-
-    // All zeros hit during the turn (intermediate clicks + final click)
-    int totalZeroCount = 0;
+    public Day01() {
+        super("day01");
+    }
 
     @Override
-    protected void processToken(String token) {
-        char direction = token.charAt(0);
-        int steps = Integer.parseInt(token.substring(1).trim());
+    protected Answers solve(String input) {
+        int pointer = START_VALUE;
+        int endStateZeroCount = 0;
+        int totalZeroCount = 0;
 
-        switch (direction) {
-            case 'L' -> turn(LEFT, pointer, steps);
-            case 'R' -> turn(RIGHT, pointer, steps);
-            default -> throw new IllegalArgumentException("Unknown direction: " + token);
+        for (String token : input.split("\\R")) {
+            char direction = token.charAt(0);
+            int steps = Integer.parseInt(token.substring(1));
+
+            BinaryOperator<Integer> move = switch (direction) {
+                case 'L' -> LEFT;
+                case 'R' -> RIGHT;
+                default -> throw new IllegalArgumentException("Unknown direction: " + token);
+            };
+
+            if (steps > 0) {
+                int step1 = move.apply(pointer, 1);
+                int stepN = move.apply(pointer, steps);
+                int min = Math.min(step1, stepN);
+                int max = Math.max(step1, stepN);
+                totalZeroCount += countMultiplesOfHundredInRange(min, max);
+            }
+
+            pointer = Math.floorMod(move.apply(pointer, steps), 100);
+            if (pointer == 0) endStateZeroCount++;
         }
-    }
 
-    protected void turn(BinaryOperator<Integer> direction, int startValue, int steps) {
-        countZerosDuringTurn(direction, startValue, steps);
-
-        pointer = Math.floorMod(direction.apply(startValue, steps), 100);
-        if (pointer == 0) endStateZeroCount++;
-    }
-
-    protected void countZerosDuringTurn(BinaryOperator<Integer> direction, int startValue, int steps) {
-        if (steps <= 0) return;
-
-        // Clicks: 1 step through N steps (including final step), regardless of direction.
-        int step1 = direction.apply(startValue, 1);
-        int stepN = direction.apply(startValue, steps);
-        int min = Math.min(step1, stepN);
-        int max = Math.max(step1, stepN);
-        totalZeroCount += countMultiplesOfHundredInRange(min, max);
+        return new Answers(endStateZeroCount, totalZeroCount);
     }
 
     private static int countMultiplesOfHundredInRange(int min, int max) {

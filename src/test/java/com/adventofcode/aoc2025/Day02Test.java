@@ -13,18 +13,16 @@ class Day02Test {
     @Test
     void puzzleExample_part1_is_1227775554() {
         Day02 day02 = new Day02();
+        Day.Answers answers = day02.solve(PUZZLE_EXAMPLE_INPUT);
 
-        day02.processLine(PUZZLE_EXAMPLE_INPUT);
-
-        Assertions.assertEquals(1227775554L, day02.solvePart1());
+        Assertions.assertEquals(1227775554L, answers.part1());
     }
 
     @Test
     void puzzleExample_part2_is_4174379265() {
         Day02 day02 = new Day02();
+        Day.Answers answers = day02.solve(PUZZLE_EXAMPLE_INPUT);
 
-        day02.processLine(PUZZLE_EXAMPLE_INPUT);
-
-        Assertions.assertEquals(4174379265L, day02.solvePart2());
+        Assertions.assertEquals(4174379265L, answers.part2());
     }
 }

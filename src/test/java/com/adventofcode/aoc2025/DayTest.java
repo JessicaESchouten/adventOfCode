@@ -3,69 +3,94 @@ package com.adventofcode.aoc2025;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 class DayTest {
 
     @Test
-    void framework_processLine_null_doesNothing() {
-        DummyDay day = new DummyDay();
-
-        day.processLine(null);
-
-        Assertions.assertTrue(day.tokens.isEmpty());
-    }
-
-    @Test
-    void framework_processLine_trims_andPassesOneToken_toProcessToken() {
-        DummyDay day = new DummyDay();
-
-        day.processLine("  abc  ");
-
-        Assertions.assertEquals(List.of("abc"), day.tokens);
-    }
-
-    @Test
-    void framework_processLine_emptyOrWhitespace_isIgnored() {
-        DummyDay day = new DummyDay();
-
-        day.processLine("");
-        day.processLine("   \t  ");
-
-        Assertions.assertTrue(day.tokens.isEmpty());
-    }
-
-    @Test
-    void framework_processLine_usesSplitLine_andSkipsEmptyParts() {
-        DummyDay day = new DummyDay() {
+    void defaultInputPath_usesInputName() {
+        Day day = new Day("day04") {
             @Override
-            protected String[] splitLine(String line) {
-                return new String[] { " a ", "   ", "", "\tb\t" };
+            protected Answers solve(String input) {
+                return new Answers(null, null);
             }
         };
 
-        day.processLine("irrelevant");
-
-        Assertions.assertEquals(List.of("a", "b"), day.tokens);
+        Assertions.assertEquals(Path.of("src/main/resources/aoc2025/day04.txt"), day.defaultInputPath());
     }
 
     @Test
-    void framework_processLine_defaultSplitLine_doesNotSplit() {
-        DummyDay day = new DummyDay();
+    void run_readsFile_andPrintsTwoLines() throws Exception {
+        Path tmp = Files.createTempFile("aoc-day", ".txt");
+        Files.writeString(tmp, "abc", StandardCharsets.UTF_8);
 
-        day.processLine("a,b,c");
+        Day day = new Day("unused") {
+            @Override
+            protected Answers solve(String input) {
+                Assertions.assertEquals("abc", input);
+                return new Answers("p1", "p2");
+            }
 
-        Assertions.assertEquals(List.of("a,b,c"), day.tokens);
+            @Override
+            protected Path defaultInputPath() {
+                return tmp;
+            }
+        };
+
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
+            day.run();
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        Assertions.assertEquals("p1" + System.lineSeparator() + "p2" + System.lineSeparator(),
+                out.toString(StandardCharsets.UTF_8));
     }
 
-    private static class DummyDay extends Day {
-        final List<String> tokens = new ArrayList<>();
+    @Test
+    void main_instantiatesDayClassByNumber() throws Exception {
+        Path tmp = Files.createTempFile("aoc-day-main", ".txt");
+        Files.writeString(tmp, "ignored", StandardCharsets.UTF_8);
+        Day99.inputPath = tmp;
+        Day99.answers = new Day.Answers("p1", "p2");
 
-        @Override
-        protected void processToken(String token) {
-            tokens.add(token);
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
+            AdventOfCode.main(new String[] { "99" });
+        } finally {
+            System.setOut(originalOut);
         }
+
+        Assertions.assertEquals("p1" + System.lineSeparator() + "p2" + System.lineSeparator(),
+                out.toString(StandardCharsets.UTF_8));
     }
 }
 
+final class Day99 extends Day {
+
+    static Path inputPath;
+    static Answers answers;
+
+    Day99() {
+        super("unused");
+    }
+
+    @Override
+    protected Answers solve(String input) {
+        return answers;
+    }
+
+    @Override
+    protected Path defaultInputPath() {
+        return inputPath;
+    }
+}
