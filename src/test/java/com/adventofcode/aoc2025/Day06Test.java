@@ -17,7 +17,7 @@ class Day06Test {
         Day06 day06 = new Day06();
         Day.Answers answers = day06.solve(input);
         Assertions.assertEquals(4277556L, answers.part1());
-        Assertions.assertNull(answers.part2());
+        Assertions.assertEquals(3263827L, answers.part2());
     }
 
     @Test
@@ -32,6 +32,6 @@ class Day06Test {
         Day06 day06 = new Day06();
         Day.Answers answers = day06.solve(input);
         Assertions.assertEquals(4277556L, answers.part1());
-        Assertions.assertNull(answers.part2());
+        Assertions.assertEquals(3263827L, answers.part2());
     }
 }

@@ -1,6 +1,7 @@
 package com.adventofcode.aoc2025;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class Day06 extends Day {
@@ -11,12 +12,11 @@ public final class Day06 extends Day {
 
     @Override
     protected Answers solve(String input) {
-        return new Answers(grandTotal(input), null);
+        List<String> lines = unwrapWorksheet(List.of(input.split("\\R")));
+        return new Answers(grandTotalPart1(lines), grandTotalPart2(lines));
     }
 
-    static long grandTotal(String input) {
-        List<String> lines = unwrapWorksheet(List.of(input.split("\\R")));
-
+    static long grandTotalPart1(List<String> lines) {
         List<String> numberLines = lines.subList(0, lines.size() - 1);
         String[] operatorTokens = lines.getLast().trim().split("\\s+");
         boolean[] isAddition = new boolean[operatorTokens.length];
@@ -43,44 +43,89 @@ public final class Day06 extends Day {
         return grandTotal;
     }
 
+    static long grandTotalPart2(List<String> lines) {
+        List<String> numberLines = lines.subList(0, lines.size() - 1);
+        String operatorLine = lines.getLast();
+
+        int maxLen = 0;
+        for (String line : lines) {
+            if (line.length() > maxLen) maxLen = line.length();
+        }
+
+        boolean[] isBlankColumn = new boolean[maxLen];
+        Arrays.fill(isBlankColumn, true);
+        for (String line : lines) {
+            for (int i = 0; i < line.length(); i++) {
+                if (line.charAt(i) != ' ') isBlankColumn[i] = false;
+            }
+        }
+
+        long[] columnNumbers = new long[maxLen];
+        boolean[] hasDigitColumn = new boolean[maxLen];
+        for (String numberLine : numberLines) {
+            for (int i = 0; i < numberLine.length(); i++) {
+                char character = numberLine.charAt(i);
+                if (character == ' ') continue;
+                hasDigitColumn[i] = true;
+                columnNumbers[i] = columnNumbers[i] * 10 + (character - '0');
+            }
+        }
+
+        long grandTotal = 0L;
+        int col = 0;
+        while (col < maxLen) {
+            while (col < maxLen && isBlankColumn[col]) col++;
+            if (col >= maxLen) break;
+
+            int startColumnInclusive = col;
+            while (col < maxLen && !isBlankColumn[col]) col++;
+            int endColumnExclusive = col;
+
+            boolean isAddition = readOperator(operatorLine, startColumnInclusive, endColumnExclusive) == '+';
+            long problemAnswer = isAddition ? 0L : 1L;
+
+            for (int digitColumn = endColumnExclusive - 1; digitColumn >= startColumnInclusive; digitColumn--) {
+                if (!hasDigitColumn[digitColumn]) continue;
+                long number = columnNumbers[digitColumn];
+                problemAnswer = isAddition ? Math.addExact(problemAnswer, number) : Math.multiplyExact(problemAnswer, number);
+            }
+
+            grandTotal = Math.addExact(grandTotal, problemAnswer);
+        }
+
+        return grandTotal;
+    }
+
     private static List<String> unwrapWorksheet(List<String> lines) {
-        List<Integer> operatorLines = new ArrayList<>();
+        int firstOperatorLineIndex = -1;
+        int operatorLineCount = 0;
         for (int i = 0; i < lines.size(); i++) {
-            if (isOperatorLine(lines.get(i))) operatorLines.add(i);
+            String line = lines.get(i);
+            if (line.indexOf('+') < 0 && line.indexOf('*') < 0) continue;
+            operatorLineCount++;
+            if (firstOperatorLineIndex < 0) firstOperatorLineIndex = i;
         }
-        if (operatorLines.size() == 1) return lines;
+        if (operatorLineCount <= 1) return lines;
 
-        int blockSize = operatorLines.getFirst() + 1;
-        List<List<String>> blocks = new ArrayList<>(operatorLines.size());
-
-        int start = 0;
-        for (int operatorIndex : operatorLines) {
-            blocks.add(lines.subList(start, operatorIndex + 1));
-            start = operatorIndex + 1;
-        }
-
+        int blockSize = firstOperatorLineIndex + 1;
         List<String> unrolled = new ArrayList<>(blockSize);
         for (int row = 0; row < blockSize; row++) {
             StringBuilder lineBuilder = new StringBuilder();
-            for (int i = 0; i < blocks.size(); i++) {
-                lineBuilder.append(blocks.get(i).get(row));
-                if (i != blocks.size() - 1) lineBuilder.append(' ');
+            for (int block = 0; block < operatorLineCount; block++) {
+                if (block != 0) lineBuilder.append(' ');
+                lineBuilder.append(lines.get(block * blockSize + row));
             }
             unrolled.add(lineBuilder.toString());
         }
         return unrolled;
     }
 
-    private static boolean isOperatorLine(String line) {
-        boolean hasOperator = false;
-        for (int i = 0; i < line.length(); i++) {
-            char character = line.charAt(i);
-            if (character == '+' || character == '*') {
-                hasOperator = true;
-            } else if (character != ' ') {
-                return false;
-            }
+    private static char readOperator(String operatorLine, int startColumnInclusive, int endColumnExclusive) {
+        int operatorLimit = Math.min(endColumnExclusive, operatorLine.length());
+        for (int col = startColumnInclusive; col < operatorLimit; col++) {
+            char character = operatorLine.charAt(col);
+            if (character == '+' || character == '*') return character;
         }
-        return hasOperator;
+        return '+';
     }
 }
